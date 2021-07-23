@@ -2,9 +2,9 @@
   "name": "koa-graphql",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "dev":"nodemon src/index.js",
+    "dev": "nodemon src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,7 +20,13 @@
   "homepage": "https://github.com/ButchLendio/koa-graphql#readme",
   "dependencies": {
     "apollo-server": "^3.0.2",
+    "apollo-server-koa": "^3.0.2",
     "graphql": "^15.5.1",
+    "koa": "^2.13.1",
+    "mongoose": "^5.13.3",
     "nodemon": "^2.0.12"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.6"
   }
 }

@@ -1,0 +1,3 @@
+scalar Binary
+scalar EmailAddress
+scalar DateTime

@@ -1,15 +1,17 @@
-const { ApolloServer, gql } = require('apollo-server');
+import { ApolloServer, gql } from "apollo-server-koa";
+import Koa from "koa";
+import Mongo from "./config/mongo"
 
 const books = [
-    {
-      title: 'The Awakening',
-      author: 'Kate Chopin',
-    },
-    {
-      title: 'City of Glass',
-      author: 'Paul Auster',
-    },
-  ];
+  {
+    title: "The Awakening",
+    author: "Kate Chopin",
+  },
+  {
+    title: "City of Glass",
+    author: "Paul Auster",
+  },
+];
 
 const typeDefs = gql`
   type Book {
@@ -20,15 +22,33 @@ const typeDefs = gql`
   type Query {
     books: [Book]
   }
-  `
-  const resolvers = {
-    Query: {
-      books: () => books,
-    },
-  };
+`;
+const resolvers = {
+  Query: {
+    books: () => books,
+  },
+};
+(async () => {
+  const app = new Koa();
 
   const server = new ApolloServer({ typeDefs, resolvers });
 
-server.listen().then(({ url }) => {
-  console.log(`🚀  Server ready at ${url}`);
-});
+  async function Connect(){
+    const connect= Mongo.connectWithRetry()
+    return connect
+ } 
+
+  await server.start();
+  server.applyMiddleware({ app });
+
+  const port = process.env.PORT || 5000;
+
+  app.listen(port, async () => {
+    await Connect()
+
+    console.log(
+      `🚀 Server ready at http://localhost:${port}${server.graphqlPath}`
+    );
+  });
+  return { server, app };
+})();
