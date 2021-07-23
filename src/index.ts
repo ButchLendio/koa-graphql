@@ -1,6 +1,6 @@
 import { ApolloServer, gql } from "apollo-server-koa";
 import Koa from "koa";
-import Mongo from "./config/mongo"
+import {MongooseService} from "./config/mongo"
 
 const books = [
   {
@@ -34,7 +34,7 @@ const resolvers = {
   const server = new ApolloServer({ typeDefs, resolvers });
 
   async function Connect(){
-    const connect= Mongo.connectWithRetry()
+    const connect = MongooseService()
     return connect
  } 
 
