@@ -1,4 +1,3 @@
-graphql
 type Query {
 	"""
 	Returns an object given by its ID.
