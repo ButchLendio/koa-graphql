@@ -26,7 +26,9 @@ export const resolvers = {
       }
 
       const postUser = await Users.create(user);
+      
       if (postUser) {
+          const id=postUser._id
         const passwordIsValid = await Bcryptjs.compare(password, postUser.password);
 
         if (passwordIsValid) {
@@ -37,8 +39,7 @@ export const resolvers = {
 
           const token = await Jwt.sign(
             {
-              emailAddress,
-              password,
+                id:postUser._id
             },
             Token.secret,
             {
