@@ -21,6 +21,7 @@
   "homepage": "https://github.com/ButchLendio/koa-graphql#readme",
   "dependencies": {
     "apollo-server": "^3.0.2",
+    "apollo-server-errors": "^3.0.1",
     "apollo-server-koa": "^3.0.2",
     "bcryptjs": "^2.4.3",
     "crypto": "^1.0.1",

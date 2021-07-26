@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-enum EntityType {
+export enum EntityType {
   Account = 0,
   Product = 1,
 }
