@@ -2,6 +2,7 @@ import Bcryptjs from "bcryptjs";
 import Users from "../models/users";
 import Token from "../config/jwt";
 import Jwt from "jsonwebtoken";
+import {generateId} from "../schemas/generate-ids"
 
 export const resolvers = {
   Query: {
@@ -14,6 +15,7 @@ export const resolvers = {
       const { emailAddress, firstname, lastname, password } = input;
 
       const user = new Users({
+        id: await generateId(0),
         emailAddress,
         firstname,
         lastname,
@@ -26,7 +28,7 @@ export const resolvers = {
       }
 
       const postUser = await Users.create(user);
-      
+
       if (postUser) {
           const id=postUser._id
         const passwordIsValid = await Bcryptjs.compare(password, postUser.password);
