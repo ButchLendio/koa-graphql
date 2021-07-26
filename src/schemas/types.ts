@@ -1,3 +1,6 @@
+import { gql } from "apollo-server-koa";
+
+export const types= gql`
 interface Node {
 	id: Binary!
 }
@@ -5,7 +8,7 @@ interface Node {
 type Account implements Node {
 	id: Binary!
 	firstname: String!
-	lastname: Sting!
+	lastname: String!
 	emailAddress: EmailAddress!
 	createdAt: DateTime!
 	updatedAt: DateTime!
@@ -22,4 +25,5 @@ type Product implements Node {
 
 type Authentication {
 	token: String!
-}
+}`
+
