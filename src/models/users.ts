@@ -1,15 +1,17 @@
-import Mongoose, { Schema } from 'mongoose';
-import IUsers from '../interfaces/users';
+import Mongoose, { Schema } from "mongoose";
+import IUsers from "../interfaces/users";
 
 const UserSchema: Schema = new Schema(
-    {
-        name:{ type: String, require: true },
-        username: { type: String, require: true ,unique:true },
-        password: { type: String, require: true }
-    },
-    {
-        timestamps: true
-    }
+  {
+    id: { type: Buffer, required: true },
+    emailAddress: { type: String, required: true },
+    firstname: { type: String, required: true },
+    lastname: { type: String, required: true },
+    password: { type: String, required: true },
+  },
+  {
+    timestamps: true,
+  }
 );
 
-export default Mongoose.model<IUsers>('Users', UserSchema);
+export default Mongoose.model<IUsers>("Users", UserSchema);
