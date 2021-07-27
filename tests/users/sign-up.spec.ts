@@ -4,8 +4,6 @@ import { startServer } from "../../src/index";
 import Users from "../../src/models/users";
 import { generateFakeUser } from "../helpers/helpers";
 
-
-
 describe("Mutation.signUp", () => {
   after(async function () {
     await Users.deleteMany({});
