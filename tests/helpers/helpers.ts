@@ -6,8 +6,6 @@ import { generateId, EntityType } from "../../src/schemas/generate-ids";
 import {SERVER} from '../../src/index'
 import R from 'ramda'
 
-
-
 export function generateFakeUser() {
     return {
         emailAddress: internet.email(),

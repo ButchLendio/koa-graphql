@@ -6,11 +6,11 @@ import Bcryptjs from "bcryptjs";
 import { generateFakeUser } from "../helpers/helpers";
 
 describe("User Test", () => {
-  // afterEach(async function() {
-  //        await Users.deleteMany({})
-  //     })
+  afterEach(async function () {
+    await Users.deleteMany({});
+  });
 
-  it("SignUp", async function (done) {
+  it("SignUp", async function () {
     const signUpMutation = `
             mutation($input:SignUpInput!){
                 signUp(input: $input){
@@ -18,7 +18,6 @@ describe("User Test", () => {
                 }
             }
         `;
-    const userCreate = generateFakeUser();
 
     const res = await Request(startServer)
       .post("/graphql")
@@ -26,18 +25,14 @@ describe("User Test", () => {
         query: signUpMutation,
         variables: {
           input: {
-            emailAddress: userCreate.emailAddress,
-            firstname: userCreate.firstname,
-            lastname: userCreate.lastname,
-            password: userCreate.password,
+            emailAddress: generateFakeUser().emailAddress,
+            firstname: generateFakeUser().firstname,
+            lastname: generateFakeUser().lastname,
+            password: generateFakeUser().password,
           },
         },
       });
-    
-    expect(res.statusCode).to.equal(200)
-    done();
 
-    // .auth(generateFakeUser().username,generateFakeUser().password)
-    //  expect(res.status).to.equal(200)
+    expect(res.statusCode).to.equal(200);
   });
 });
