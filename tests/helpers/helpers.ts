@@ -1,5 +1,6 @@
 import {internet,name} from "faker"
 
+
 export function generateFakeUser() {
     return {
         emailAddress: internet.email(),

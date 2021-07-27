@@ -4,7 +4,7 @@ export const mutations = gql`
   type Mutation {
     signUp(input: SignUpInput!): Authentication!
 
-    # authenticate(input: AuthenticateInput!): Authentication!
+    authenticate(input: AuthenticateInput!): Authentication!
 
     # createProduct(input: CreateProductInput!): Product! @private
 
