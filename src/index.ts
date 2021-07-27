@@ -74,7 +74,8 @@ const app = new Koa();
 
 const server = new ApolloServer({
   schema: makeExecutableSchema({
-    typeDefs: gql``,
+    typeDefs,
+    resolvers,
     schemaTransforms: [privateDirectiveTransformer],
   }),
   plugins: [ApolloServerPluginLandingPageGraphQLPlayground],
