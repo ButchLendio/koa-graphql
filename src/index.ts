@@ -1,23 +1,22 @@
 import { ApolloServer } from "apollo-server-koa";
-import { makeExecutableSchema } from '@graphql-tools/schema';
+import { makeExecutableSchema } from "@graphql-tools/schema";
 import Koa from "koa";
 import { MongooseService } from "./config/mongo";
 import { typeDefs } from "./schemas/typeDefs";
 import { resolvers } from "./resolvers/resolver";
-import { GraphQLSchema, defaultFieldResolver } from 'graphql';
-import { getDirectives, MapperKind, mapSchema } from '@graphql-tools/utils';
-import { AuthenticationError } from 'apollo-server-errors';
-import { Context } from 'koa';
-import cors from '@koa/cors';
-import koaBody from 'koa-body';
-import {
-  ApolloServerPluginLandingPageGraphQLPlayground,
-  gql,
-} from 'apollo-server-core'
+import { GraphQLSchema, defaultFieldResolver } from "graphql";
+import { getDirectives, MapperKind, mapSchema } from "@graphql-tools/utils";
+import { AuthenticationError } from "apollo-server-errors";
+import { Context } from "koa";
+import cors from "@koa/cors";
+import koaBody from "koa-body";
+import Jwt from "jsonwebtoken";
+import Token from "./config/jwt";
+import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 
 function privateDirectiveTransformer(schema: GraphQLSchema) {
   const typeDirectiveArgumentMaps: Record<string, any> = {};
-  const directiveName = 'private';
+  const directiveName = "private";
 
   return mapSchema(schema, {
     [MapperKind.TYPE]: (type) => {
@@ -37,18 +36,17 @@ function privateDirectiveTransformer(schema: GraphQLSchema) {
           source,
           args,
           context: Context,
-          info,
+          info
         ) {
-          const [type, token] = context.get('Authorization').split(' ');
+          const [type, token] = context.get("Authorization").split(" ");
 
-          if (!type || type.toLowerCase() !== 'bearer' || !token) {
-            throw new AuthenticationError('Invalid authentication header.');
+          if (!type || type.toLowerCase() !== "bearer" || !token) {
+            throw new AuthenticationError("Invalid authentication header.");
           }
 
-          // Verify token and retrieve user information
-          // Add user in context
+          const { id } = Jwt.verify(token, Token.secret) as Jwt.JwtPayload;
 
-          const user = { id: 'userId' };
+          const user = { id };
 
           return resolve(
             source,
@@ -57,7 +55,7 @@ function privateDirectiveTransformer(schema: GraphQLSchema) {
               ...context,
               user,
             },
-            info,
+            info
           );
         };
 
@@ -67,10 +65,9 @@ function privateDirectiveTransformer(schema: GraphQLSchema) {
   });
 }
 
-
 const app = new Koa();
-  app.use(cors());
-  app.use(koaBody());
+app.use(cors());
+app.use(koaBody());
 
 const server = new ApolloServer({
   schema: makeExecutableSchema({
@@ -90,7 +87,6 @@ async function Connect() {
 }
 
 export const SERVER = async () => {
-
   await server.start();
   server.applyMiddleware({ app });
 };
@@ -98,11 +94,11 @@ export const SERVER = async () => {
 const port = process.env.PORT || 8000;
 
 export const startServer = app.listen(port, async () => {
-    await Connect();
+  await Connect();
 
-    console.log(
-      `🚀 Server ready at http://localhost:${port}${server.graphqlPath}`
-    );
-  });
+  console.log(
+    `🚀 Server ready at http://localhost:${port}${server.graphqlPath}`
+  );
+});
 
 SERVER();
