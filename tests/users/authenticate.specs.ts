@@ -13,34 +13,13 @@ describe("Mutation.authenticate", () => {
     await Users.deleteMany({});
   });
 
-  it("should sign up", async function () {
-    const signUpMutation = `
-            mutation($input:SignUpInput!){
-                signUp(input: $input){
-                    token
-                }
-            }
-        `;
-
-    const res = await Request(startServer)
-      .post("/graphql")
-      .send({
-        query: signUpMutation,
-        variables: {
-          input: generateFakeUser(),
-        },
-      });
-
-    expect(res.statusCode).to.equal(200);
-  });
-
   it("should authenticate successfully", async function () {
-    const userCreate = generateFakeUser();
+    const createdUser = generateFakeUser();
 
     await Users.create({
-      ...userCreate,
+      ...createdUser,
       id:generateId(EntityType.Account),
-      password: await Bcryptjs.hash(userCreate.password, 10),
+      password: await Bcryptjs.hash(createdUser.password, 10),
     });
     const authenticatepMutation = `
             mutation($input:AuthenticateInput!){
@@ -56,8 +35,8 @@ describe("Mutation.authenticate", () => {
         query: authenticatepMutation,
         variables: {
           input: {
-            emailAddress:userCreate.emailAddress,
-            password:userCreate.password
+            emailAddress:createdUser.emailAddress,
+            password:createdUser.password
           }
         },
       });
@@ -65,12 +44,12 @@ describe("Mutation.authenticate", () => {
   });
 
   it("should error if password is invalid", async function () {
-    const userCreate = generateFakeUser();
+    const createdUser = generateFakeUser();
 
     await Users.create({
-      ...userCreate,
+      ...createdUser,
       id:generateId(EntityType.Account),
-      password: await Bcryptjs.hash(userCreate.password, 10),
+      password: await Bcryptjs.hash(createdUser.password, 10),
     });
     const authenticatepMutation = `
             mutation($input:AuthenticateInput!){
@@ -86,7 +65,7 @@ describe("Mutation.authenticate", () => {
         query: authenticatepMutation,
         variables: {
           input: {
-            emailAddress:userCreate.emailAddress,
+            emailAddress:createdUser.emailAddress,
             password:"lkajsdf"
           }
         },
@@ -97,12 +76,12 @@ describe("Mutation.authenticate", () => {
   });
 
   it("should error if password is invalid", async function () {
-    const userCreate = generateFakeUser();
+    const createdUser = generateFakeUser();
 
     await Users.create({
-      ...userCreate,
+      ...createdUser,
       id:generateId(EntityType.Account),
-      password: await Bcryptjs.hash(userCreate.password, 10),
+      password: await Bcryptjs.hash(createdUser.password, 10),
     });
     const authenticatepMutation = `
             mutation($input:AuthenticateInput!){
@@ -119,7 +98,7 @@ describe("Mutation.authenticate", () => {
         variables: {
           input: {
             emailAddress:"kasjhdfkjashfda",
-            password:userCreate.password
+            password:createdUser.password
           }
         },
       });
