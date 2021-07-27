@@ -1,10 +1,10 @@
 import { Document } from 'mongoose';
 
 export default interface Products extends Document {
-    id:string;
+    id:Buffer;
     name: string;
-    price: string;
-    createdBy: string;
+    description: string;
+    owner: string;
     cursor: string;
     createdAt:Date;
     updatedAt:Date;

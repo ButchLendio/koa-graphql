@@ -1,5 +1,6 @@
 import Bcryptjs from "bcryptjs";
 import Users from "../models/users";
+import Products from "../models/products";
 import Token from "../config/jwt";
 import Jwt from "jsonwebtoken";
 import { generateId, EntityType } from "../schemas/generate-ids";
@@ -48,5 +49,40 @@ export const resolvers = {
 
       return { token };
     },
-  },
+
+    createProduct: async (_: never, { input }) => {
+      const { name, description } = input;
+      const id = generateId(EntityType.Product);
+
+      const productExists = await Products.exists({ name });
+      if (productExists) {
+        throw new UserInputError("Name address already used.");
+      }
+
+    //   const postUser = await Users.create({
+    //     id,
+    //     name,
+    //     description
+    //   });
+
+    //   const timeInMilliseconds = new Date().getTime();
+    //   const expirationTime =
+    //     timeInMilliseconds + Number(Token.expireTime) * 10_000;
+    //   const expireTimeInSeconds = Math.floor(expirationTime / 1_000);
+
+    //   const token = await Jwt.sign(
+    //     {
+    //       id: postUser._id,
+    //     },
+    //     Token.secret,
+    //     {
+    //       issuer: Token.issUser,
+    //       algorithm: "HS256",
+    //       expiresIn: expireTimeInSeconds,
+    //     }
+    //   );
+
+    //   return { token };
+    },
+  }
 };

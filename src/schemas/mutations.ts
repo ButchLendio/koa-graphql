@@ -6,7 +6,7 @@ export const mutations = gql`
 
     # authenticate(input: AuthenticateInput!): Authentication!
 
-    # createProduct(input: CreateProductInput!): Product! @private
+    createProduct(input: CreateProductInput!): Product! 
 
     # updateProduct(input: UpdateProductInput!): Product! @private
 
