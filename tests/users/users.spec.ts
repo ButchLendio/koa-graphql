@@ -8,12 +8,12 @@ import { generateId, EntityType } from "../../src/schemas/generate-ids";
 
 
 
-describe("User Test", () => {
+describe("Mutation.authenticate", () => {
   after(async function () {
     await Users.deleteMany({});
   });
 
-  it("SignUp", async function () {
+  it("should sign up", async function () {
     const signUpMutation = `
             mutation($input:SignUpInput!){
                 signUp(input: $input){
@@ -34,7 +34,7 @@ describe("User Test", () => {
     expect(res.statusCode).to.equal(200);
   });
 
-  it("authenticate", async function () {
+  it("should authenticate successfully", async function () {
     const userCreate = generateFakeUser();
 
     await Users.create({
@@ -64,7 +64,7 @@ describe("User Test", () => {
     expect(res.statusCode).to.equal(200);
   });
 
-  it("Unauthorized", async function () {
+  it("should error if password is invalid", async function () {
     const userCreate = generateFakeUser();
 
     await Users.create({
@@ -96,7 +96,7 @@ describe("User Test", () => {
     expect(body.errors[0].message).to.equal("Unauthorized");
   });
 
-  it("Unauthorized", async function () {
+  it("should error if password is invalid", async function () {
     const userCreate = generateFakeUser();
 
     await Users.create({
