@@ -1,4 +1,5 @@
 import { ApolloServer } from "apollo-server-koa";
+import { makeExecutableSchema } from '@graphql-tools/schema';
 import Koa from "koa";
 import { MongooseService } from "./config/mongo";
 import { typeDefs } from "./schemas/typeDefs";
@@ -7,6 +8,12 @@ import { GraphQLSchema, defaultFieldResolver } from 'graphql';
 import { getDirectives, MapperKind, mapSchema } from '@graphql-tools/utils';
 import { AuthenticationError } from 'apollo-server-errors';
 import { Context } from 'koa';
+import cors from '@koa/cors';
+import koaBody from 'koa-body';
+import {
+  ApolloServerPluginLandingPageGraphQLPlayground,
+  gql,
+} from 'apollo-server-core'
 
 function privateDirectiveTransformer(schema: GraphQLSchema) {
   const typeDirectiveArgumentMaps: Record<string, any> = {};
@@ -62,8 +69,19 @@ function privateDirectiveTransformer(schema: GraphQLSchema) {
 
 
 const app = new Koa();
+  app.use(cors());
+  app.use(koaBody());
 
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({
+  schema: makeExecutableSchema({
+    typeDefs: gql``,
+    schemaTransforms: [privateDirectiveTransformer],
+  }),
+  plugins: [ApolloServerPluginLandingPageGraphQLPlayground],
+  context: ({ ctx }) => {
+    return ctx;
+  },
+});
 
 async function Connect() {
   const connect = MongooseService();
