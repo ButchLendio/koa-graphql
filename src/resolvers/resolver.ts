@@ -93,11 +93,13 @@ export const resolvers = {
         throw new UserInputError("Name address already used.");
       }
 
-    //   const postUser = await Users.create({
-    //     id,
-    //     name,
-    //     description
-    //   });
+      const postUser = await Products.create({
+        id,
+        name,
+        description
+      });
+
+      console.log(postUser)
 
     //   const timeInMilliseconds = new Date().getTime();
     //   const expirationTime =

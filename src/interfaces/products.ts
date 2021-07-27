@@ -5,7 +5,7 @@ export default interface Products extends Document {
     name: string;
     description: string;
     owner: string;
-    cursor: string;
+    cursor: Buffer;
     createdAt:Date;
     updatedAt:Date;
 }
