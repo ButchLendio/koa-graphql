@@ -2,8 +2,8 @@ import Bcryptjs from "bcryptjs";
 import Users from "../models/users";
 import Token from "../config/jwt";
 import Jwt from "jsonwebtoken";
-import {generateId,EntityType} from "../schemas/generate-ids"
-import { UserInputError } from 'apollo-server-errors';
+import { generateId, EntityType } from "../schemas/generate-ids";
+import { UserInputError } from "apollo-server-errors";
 
 export const resolvers = {
   Query: {
@@ -16,7 +16,12 @@ export const resolvers = {
       const { emailAddress, firstname, lastname, password } = input;
       const id = generateId(EntityType.Account);
 
-      const user = new Users({
+      const userExists = await Users.exists({ emailAddress });
+      if (userExists) {
+        throw new UserInputError("Email address already used.");
+      }
+
+      const postUser = await Users.create({
         id,
         emailAddress,
         firstname,
@@ -24,35 +29,24 @@ export const resolvers = {
         password: await Bcryptjs.hash(password, 10),
       });
 
-      const userExists = await Users.exists({ emailAddress });
-      if (userExists) {
-        throw new UserInputError('Email address already used.');
-      }
+      const timeInMilliseconds = new Date().getTime();
+      const expirationTime =
+        timeInMilliseconds + Number(Token.expireTime) * 10_000;
+      const expireTimeInSeconds = Math.floor(expirationTime / 1_000);
 
-      const postUser = await Users.create(user);
+      const token = await Jwt.sign(
+        {
+          id: postUser._id,
+        },
+        Token.secret,
+        {
+          issuer: Token.issUser,
+          algorithm: "HS256",
+          expiresIn: expireTimeInSeconds,
+        }
+      );
 
-      if (postUser) {
-          const timeInMilliseconds = new Date().getTime();
-          const expirationTime =
-            timeInMilliseconds + Number(Token.expireTime) * 10_000;
-          const expireTimeInSeconds = Math.floor(expirationTime / 1_000);
-
-          const token = await Jwt.sign(
-            {
-                id:postUser._id
-            },
-            Token.secret,
-            {
-              issuer: Token.issUser,
-              algorithm: "HS256",
-              expiresIn: expireTimeInSeconds,
-            }
-          );
-
-          return { token };
-      } else {
-        throw new UserInputError("Error in posting User");
-      }
+      return { token };
     },
   },
 };
