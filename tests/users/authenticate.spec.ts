@@ -6,8 +6,6 @@ import Users from "../../src/models/users";
 import { generateFakeUser } from "../helpers/helpers";
 import { generateId, EntityType } from "../../src/schemas/generate-ids";
 
-
-
 describe("Mutation.authenticate", () => {
   after(async function () {
     await Users.deleteMany({});
