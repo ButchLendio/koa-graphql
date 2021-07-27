@@ -7,7 +7,7 @@ directive @private on OBJECT | FIELD_DEFINITION
 
     authenticate(input: AuthenticateInput!): Authentication!
 
-    createProduct(input: CreateProductInput!): Boolean @private
+    createProduct(input: CreateProductInput!): Product! @private
 
     # updateProduct(input: UpdateProductInput!): Product! @private
 

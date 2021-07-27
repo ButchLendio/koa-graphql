@@ -46,9 +46,9 @@ function privateDirectiveTransformer(schema: GraphQLSchema) {
             throw new AuthenticationError('Invalid authentication header.');
           }
 
-          const decodedId = Jwt.verify(token, Token.secret) as Jwt.JwtPayload;
+          const {id} = Jwt.verify(token, Token.secret) as Jwt.JwtPayload;
 
-          const user = { id: decodedId };
+          const user = { id };
 
           return resolve(
             source,
