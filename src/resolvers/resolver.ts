@@ -5,6 +5,7 @@ import Token from "../config/jwt";
 import Jwt from "jsonwebtoken";
 import { generateId, EntityType } from "../schemas/generate-ids";
 import { UserInputError } from "apollo-server-errors";
+import users from "../models/users";
 
 export const resolvers = {
   Query: {
@@ -84,11 +85,14 @@ export const resolvers = {
       }
     },
 
-    createProduct: async (_: never, { input }) => {
+    createProduct: async (_: never, { input },ctx) => {
       const { name, description } = input;
+      console.log(ctx.user.id)
       const id = generateId(EntityType.Product);
+      
 
       const productExists = await Products.exists({ name });
+     
       if (productExists) {
         throw new UserInputError("Name address already used.");
       }
@@ -96,10 +100,23 @@ export const resolvers = {
       const postUser = await Products.create({
         id,
         name,
-        description
+        description 
       });
 
       console.log(postUser)
+      return true
+      // return{
+      //   products:{
+      //     id: Binary!,
+      //     name: String!,
+      //     description: String!,
+      //     owner: Account!,
+      //     createdAt: DateTime!,
+      //     updatedAt: DateTime!,
+      //   }
+          
+        
+      // }
 
     //   const timeInMilliseconds = new Date().getTime();
     //   const expirationTime =
@@ -121,5 +138,11 @@ export const resolvers = {
     //   return { token };
     },
     
-  }
+  },
+  // Product: {
+  //   owner: async (root: Product, _params, _context) => {
+  //     const owner = await Users.findOne({ _id: root.ownerId });
+  //     return owner;
+  //   },
+  // },
 };

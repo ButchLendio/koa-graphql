@@ -1,4 +1,6 @@
 import { ApolloServer } from "apollo-server-koa";
+import Jwt from 'jsonwebtoken';
+import Token from "./config/jwt";
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import Koa from "koa";
 import { MongooseService } from "./config/mongo";
@@ -11,8 +13,7 @@ import { Context } from 'koa';
 import cors from '@koa/cors';
 import koaBody from 'koa-body';
 import {
-  ApolloServerPluginLandingPageGraphQLPlayground,
-  gql,
+  ApolloServerPluginLandingPageGraphQLPlayground
 } from 'apollo-server-core'
 
 function privateDirectiveTransformer(schema: GraphQLSchema) {
@@ -45,10 +46,9 @@ function privateDirectiveTransformer(schema: GraphQLSchema) {
             throw new AuthenticationError('Invalid authentication header.');
           }
 
-          // Verify token and retrieve user information
-          // Add user in context
+          const decodedId = Jwt.verify(token, Token.secret) as Jwt.JwtPayload;
 
-          const user = { id: 'userId' };
+          const user = { id: decodedId };
 
           return resolve(
             source,
