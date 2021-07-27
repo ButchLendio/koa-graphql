@@ -75,7 +75,7 @@ describe("Mutation.authenticate", () => {
     expect(body.errors[0].message).to.equal("Unauthorized");
   });
 
-  it("should error if password is invalid", async function () {
+  it("should error if email is invalid", async function () {
     const createdUser = generateFakeUser();
 
     await Users.create({
