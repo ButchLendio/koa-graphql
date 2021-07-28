@@ -113,6 +113,31 @@ export const resolvers = {
         cursor,
       });
     },
+
+    deleteProduct: async (_: never, { input }, ctx) => {
+      const ownerId = ctx.user.id;
+      const { id, } = input;
+
+      const foundProduct = await Products.findOne({ id });
+
+      if (!foundProduct) {
+        throw new Error("Product does not exist");
+      }
+
+      if (
+        foundProduct.ownerId.toString("base64") !==
+        Buffer.from(ownerId).toString("base64")
+      ) {
+        throw new Error("Not the owner of the product");
+      }
+
+      const result = await foundProduct.deleteOne()
+      if(result){
+        return true
+      }else{
+        throw new Error("Error on delete")
+      }
+    },
   },
 
   EmailAddress: EmailAddressResolver,
