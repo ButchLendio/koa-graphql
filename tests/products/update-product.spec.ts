@@ -23,7 +23,7 @@ const updateProductMutation = `
             }
         `;
 
-describe("Mutation.updateProduct", () => {
+describe.only("Mutation.updateProduct", () => {
   after(async function () {
     await Products.deleteMany({});
   });
@@ -37,7 +37,7 @@ describe("Mutation.updateProduct", () => {
       password: await Bcryptjs.hash(createdUser.password, 10),
     });
     const token = await getToken(createdUser);
-    await addFakeProduct(createdProduct,token)
+    await addFakeProduct()
     const foundProduct= await Products.find()
     const product = R.head(foundProduct)
 
@@ -76,8 +76,8 @@ describe("Mutation.updateProduct", () => {
       });
       const faketoken = await getToken(fakecreatedUser);
 
-    await addFakeProduct(createdProduct,token)
-    await addFakeProduct(fakecreatedProduct,faketoken)
+    await addFakeProduct()
+    await addFakeProduct()
 
     const foundProduct= await Products.find()
     const product = R.last(foundProduct)
@@ -109,7 +109,7 @@ describe("Mutation.updateProduct", () => {
       password: await Bcryptjs.hash(createdUser.password, 10),
     });
     const token = await getToken(createdUser);
-    await addFakeProduct(createdProduct,token)
+    await addFakeProduct()
     const foundProduct= await Products.find()
     const product = R.head(foundProduct)
 
