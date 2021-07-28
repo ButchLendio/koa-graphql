@@ -11,6 +11,15 @@ import {
 } from "../helpers/helpers";
 import { generateId, EntityType } from "../../src/schemas/generate-ids";
 
+const createProductMutation = `
+            mutation($input:CreateProductInput!){
+                createProduct(input: $input){
+                    name,
+                    description
+                }
+            }
+        `;
+
 describe("Mutation.createProduct", () => {
   after(async function () {
     await Products.deleteMany({});
@@ -26,15 +35,6 @@ describe("Mutation.createProduct", () => {
     });
     const token = await getToken(createdUser);
 
-    const createProductMutation = `
-            mutation($input:CreateProductInput!){
-                createProduct(input: $input){
-                    name,
-                    description
-                }
-            }
-        `;
-
     const res = await Request(startServer)
       .post("/graphql")
       .send({
@@ -49,14 +49,6 @@ describe("Mutation.createProduct", () => {
   });
 
   it("should error if no token", async function () {
-    const createProductMutation = `
-            mutation($input:CreateProductInput!){
-                createProduct(input: $input){
-                    name,
-                    description
-                }
-            }
-        `;
 
     const res = await Request(startServer)
       .post("/graphql")
@@ -78,15 +70,6 @@ describe("Mutation.createProduct", () => {
       id: generateId(EntityType.Account),
       password: await Bcryptjs.hash(createdUser.password, 10),
     });
-
-    const createProductMutation = `
-            mutation($input:CreateProductInput!){
-                createProduct(input: $input){
-                    name,
-                    description
-                }
-            }
-        `;
 
     const res = await Request(startServer)
       .post("/graphql")

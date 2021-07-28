@@ -99,15 +99,13 @@ export const resolvers = {
       const ownerId = ctx.user.id;
       const id = generateId(EntityType.Product);
 
-      const postUser = await Products.create({
+      return await Products.create({
         id,
         name,
         description,
         ownerId,
       });
-
-      return postUser;
-     
+    
     },
   },
 };
