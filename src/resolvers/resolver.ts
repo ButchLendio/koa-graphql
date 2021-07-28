@@ -105,7 +105,21 @@ export const resolvers = {
         description,
         ownerId,
       });
-    
+    },
+
+    updateProduct: async (_: never, { input }, ctx) => {
+      const ownerId = ctx.user.id;
+
+      console.log(input,ownerId)
+
+      return true
+
+      // return await Products.create({
+      //   id,
+      //   name,
+      //   description,
+      //   ownerId,
+      // });
     },
   },
 };
