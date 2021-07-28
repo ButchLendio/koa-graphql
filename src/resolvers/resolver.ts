@@ -5,6 +5,8 @@ import Token from "../config/jwt";
 import Jwt from "jsonwebtoken";
 import { generateId, EntityType } from "../schemas/generate-ids";
 import { UserInputError } from "apollo-server-errors";
+import { EmailAddressResolver } from "graphql-scalars";
+import BinaryResolver from "../schemas/scalars/binary"
 
 export const resolvers = {
   Query: {
@@ -134,5 +136,8 @@ export const resolvers = {
       //   ownerId,
       // });
     },
-  }
+  },
+  
+  EmailAddress:EmailAddressResolver,
+  Binary:BinaryResolver,
 };
