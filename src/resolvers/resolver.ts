@@ -15,7 +15,7 @@ export const resolvers = {
   },
   Product: {
     owner: async (root, _params, _context) => {
-      const owner = await Users.findOne({ _id: root.owner });
+      const owner = await Users.findOne({ _id: root.ownerId });
       return owner;
     },
   },
@@ -103,7 +103,7 @@ export const resolvers = {
         id,
         name,
         description,
-        ownerId,
+        ownerId
       });
     
     },
