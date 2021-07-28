@@ -16,7 +16,8 @@ export const resolvers = {
   },
   Product: {
     owner: async (root, _params, _context) => {
-      return Users.findOne({ _id: root.ownerId });
+      console.log(root)
+      return Users.findOne({ id: root.ownerId });
     },
   },
 
@@ -109,7 +110,7 @@ export const resolvers = {
         id,
         name,
         description,
-        ownerId,
+        ownerId:Buffer.from(ownerId),
         cursor,
       });
     },
