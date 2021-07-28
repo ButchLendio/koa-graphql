@@ -112,7 +112,7 @@ export const resolvers = {
     },
 
     updateProduct: async (_: never, { input }, ctx) => {
-      const ownerId = ctx.user.id;
+      const { id: ownerId } = ctx.user;
       const { id, body } = input;
 
       const updatedAt = new Date();
@@ -137,8 +137,7 @@ export const resolvers = {
       const updatedProduct = await Products.updateOne({ id }, body, cursor);
 
       if (updatedProduct) {
-        const foundProduct = await Products.findOne({ id });
-        return foundProduct;
+        return Products.findOne({ id });
       } else {
         throw new Error("Cannot update product");
       }
