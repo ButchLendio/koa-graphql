@@ -130,9 +130,15 @@ export const resolvers = {
         throw new Error("Product does not exist");
       }
 
-      console.log(`product.ownerId: ${ product.ownerId}`)
+      console.log(`product.ownerId: ${Buffer.from(product.ownerId).toString("base64")}`)
       console.log(`ownerId: ${ Buffer.from(ownerId).toString("base64")}`)
-      console.log(ownerId)
+      console.log(product.ownerId.toString("base64"))
+      console.log(Buffer.from(ownerId).toString("base64"))
+
+      if(product.ownerId.toString("base64") === Buffer.from(ownerId).toString("base64")){
+        console.log("qwerwer")
+      }
+
 
       if (Buffer.compare(product.ownerId,ownerId)!==0){
         throw new Error("Not the owner of the product");
