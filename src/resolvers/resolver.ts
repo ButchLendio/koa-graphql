@@ -100,13 +100,10 @@ export const resolvers = {
 
       const id = generateId(EntityType.Product);
 
-      const createdAt = new Date();
-      const cursor = Buffer.concat([
-        Buffer.from(`${createdAt.getTime()}`),
-        Buffer.from(id),
-      ]);
+      const cursor = Buffer.from(name)
+      
 
-      return await Products.create({
+      return Products.create({
         id,
         name,
         description,
