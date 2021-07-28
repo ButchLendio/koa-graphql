@@ -7,6 +7,7 @@ const ProductSchema: Schema = new Schema(
         name: { type: String, required: true },
         description: { type: String, required: true },
         ownerId: { type: Buffer, required: true },
+        cursor:{type: Buffer, required: true }
     },
     {
         timestamps: true

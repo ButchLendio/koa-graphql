@@ -97,13 +97,20 @@ export const resolvers = {
     createProduct: async (_: never, { input }, ctx) => {
       const { name, description } = input;
       const ownerId = ctx.user.id;
+
       const id = generateId(EntityType.Product);
+
+      const cursor = Buffer.concat([
+        Buffer.from(name),
+        Buffer.from(id),
+      ]);
 
       return Products.create({
         id,
         name,
         description,
         ownerId,
+        cursor,
       });
     },
 
@@ -138,8 +145,8 @@ export const resolvers = {
       //   description,
       //   ownerId,
       // });
+      }
     },
-  },
 
   EmailAddress: EmailAddressResolver,
   Binary: BinaryResolver,
