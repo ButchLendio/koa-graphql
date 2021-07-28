@@ -6,14 +6,13 @@ import Jwt from "jsonwebtoken";
 import { generateId, EntityType } from "../schemas/generate-ids";
 import { UserInputError } from "apollo-server-errors";
 import { EmailAddressResolver } from "graphql-scalars";
-import BinaryResolver from "../schemas/scalars/binary"
+import BinaryResolver from "../schemas/scalars/binary";
 
 export const resolvers = {
   Query: {
     hello: (): String => {
       return "WEW";
     },
-
   },
   Product: {
     owner: async (root, _params, _context) => {
@@ -98,19 +97,24 @@ export const resolvers = {
     createProduct: async (_: never, { input }, ctx) => {
       const { name, description } = input;
       const ownerId = ctx.user.id;
+
       const id = generateId(EntityType.Product);
+
+      const cursor = Buffer.concat([
+        Buffer.from(name),
+        Buffer.from(id),
+      ]);
 
       return Products.create({
         id,
         name,
         description,
-        ownerId
+        ownerId,
+        cursor,
       });
-    
     },
   },
 
-  
-  EmailAddress:EmailAddressResolver,
-  Binary:BinaryResolver,
+  EmailAddress: EmailAddressResolver,
+  Binary: BinaryResolver,
 };
