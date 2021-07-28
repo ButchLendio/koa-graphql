@@ -46,7 +46,7 @@ function privateDirectiveTransformer(schema: GraphQLSchema) {
 
           const { id } = Jwt.verify(token, Token.secret) as Jwt.JwtPayload;
 
-          const user = { id };
+          const user = { id:Buffer.from(id) };
 
           return resolve(
             source,

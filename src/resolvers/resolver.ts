@@ -109,7 +109,7 @@ export const resolvers = {
         id,
         name,
         description,
-        ownerId:Buffer.from(ownerId),
+        ownerId,
         cursor,
       });
     },
