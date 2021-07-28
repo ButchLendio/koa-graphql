@@ -99,12 +99,6 @@ export const resolvers = {
       const ownerId = ctx.user.id;
       const id = generateId(EntityType.Product);
 
-      const productExists = await Products.exists({ name });
-
-      if (productExists) {
-        throw new UserInputError("Name address already used.");
-      }
-
       const postUser = await Products.create({
         id,
         name,
