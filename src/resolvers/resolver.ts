@@ -17,7 +17,10 @@ export const resolvers = {
   },
   Product: {
     owner: async (root, _params, _context) => {
-      return Users.findOne({ _id: root.ownerId });
+      console.log(root)
+      const owner =await Users.findOne({ id: root.ownerId });
+      console.log(owner)
+
     },
   },
 
@@ -98,6 +101,7 @@ export const resolvers = {
     createProduct: async (_: never, { input }, ctx) => {
       const { name, description } = input;
       const ownerId = ctx.user.id;
+
       const id = generateId(EntityType.Product);
 
       const createdAt = new Date();
