@@ -6,14 +6,13 @@ import Jwt from "jsonwebtoken";
 import { generateId, EntityType } from "../schemas/generate-ids";
 import { UserInputError } from "apollo-server-errors";
 import { EmailAddressResolver } from "graphql-scalars";
-import BinaryResolver from "../schemas/scalars/binary"
+import BinaryResolver from "../schemas/scalars/binary";
 
 export const resolvers = {
   Query: {
     hello: (): String => {
       return "WEW";
     },
-
   },
   Product: {
     owner: async (root, _params, _context) => {
@@ -104,28 +103,34 @@ export const resolvers = {
         id,
         name,
         description,
-        ownerId
+        ownerId,
       });
     },
 
     updateProduct: async (_: never, { input }, ctx) => {
       const ownerId = ctx.user.id;
-      const {id,body} = input
-      console.log(id.toString("base64"))
-
+      const { id, body } = input;
+      console.log(id.toString("base64"));
 
       const updatedAt = new Date();
-      const cursor = Buffer.concat([Buffer.from(`${updatedAt.getTime()}`), Buffer.from(id)]);
+      const cursor = Buffer.concat([
+        Buffer.from(`${updatedAt.getTime()}`),
+        Buffer.from(id),
+      ]);
 
-      const product = await Products.findOne({id});
-      console.log(product)
+      const product = await Products.findOne({ id });
+      console.log(product);
 
+      if (!product) {
+        throw new Error("Product does not exist");
+      }
+      if (product.ownerId !== ownerId) {
+        throw new Error("Not the owner of the product");
+      }
 
       // const updatedProduct = await Products.updateOne(id, body, cursor);
 
-
-
-      return true
+      return true;
 
       // return await Products.create({
       //   id,
@@ -135,7 +140,7 @@ export const resolvers = {
       // });
     },
   },
-  
-  EmailAddress:EmailAddressResolver,
-  Binary:BinaryResolver,
+
+  EmailAddress: EmailAddressResolver,
+  Binary: BinaryResolver,
 };
