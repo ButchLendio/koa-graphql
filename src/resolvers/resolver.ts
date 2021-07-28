@@ -1,5 +1,6 @@
 import Bcryptjs from "bcryptjs";
 import Users from "../models/users";
+import Products from "../models/products";
 import Token from "../config/jwt";
 import Jwt from "jsonwebtoken";
 import { generateId, EntityType } from "../schemas/generate-ids";
@@ -9,6 +10,13 @@ export const resolvers = {
   Query: {
     hello: (): String => {
       return "WEW";
+    },
+
+  },
+  Product: {
+    owner: async (root, _params, _context) => {
+      const owner = await Users.findOne({ _id: root.owner });
+      return owner;
     },
   },
 
@@ -58,7 +66,10 @@ export const resolvers = {
         throw new UserInputError("User not registerd");
       }
 
-      const passwordIsValid = await Bcryptjs.compare(password, foundUser.password);
+      const passwordIsValid = await Bcryptjs.compare(
+        password,
+        foundUser.password
+      );
 
       if (passwordIsValid) {
         const timeInMilliseconds = new Date().getTime();
@@ -68,7 +79,7 @@ export const resolvers = {
 
         const token = await Jwt.sign(
           {
-            id:foundUser._id
+            id: foundUser._id,
           },
           Token.secret,
           {
@@ -81,6 +92,20 @@ export const resolvers = {
       } else {
         throw new UserInputError("Unauthorized");
       }
+    },
+
+    createProduct: async (_: never, { input }, ctx) => {
+      const { name, description } = input;
+      const ownerId = ctx.user.id;
+      const id = generateId(EntityType.Product);
+
+      return await Products.create({
+        id,
+        name,
+        description,
+        ownerId,
+      });
+    
     },
   },
 };

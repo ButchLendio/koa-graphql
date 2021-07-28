@@ -1,12 +1,13 @@
 import { gql } from "apollo-server-koa";
 
 export const mutations = gql`
+  directive @private on OBJECT | FIELD_DEFINITION
   type Mutation {
     signUp(input: SignUpInput!): Authentication!
 
     authenticate(input: AuthenticateInput!): Authentication!
 
-    # createProduct(input: CreateProductInput!): Product! @private
+    createProduct(input: CreateProductInput!): Product! @private
 
     # updateProduct(input: UpdateProductInput!): Product! @private
 

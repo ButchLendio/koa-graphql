@@ -3,14 +3,10 @@ import IProducts from '../interfaces/products';
 
 const ProductSchema: Schema = new Schema(
     {
-        id: { type: String, required: true, unique: true },
+        id: { type: Buffer, required: true, unique: true },
         name: { type: String, required: true },
-        price: { type: String, required: true },
-        createdBy: { type: String, required: true },
-        cursor: {
-            type: Buffer,
-            index: true,
-          },
+        description: { type: String, required: true },
+        ownerId: { type: Buffer, required: true },
     },
     {
         timestamps: true
