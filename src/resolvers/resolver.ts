@@ -138,7 +138,6 @@ export const resolvers = {
 
       if (updatedProduct) {
         const foundProduct = await Products.findOne({ id });
-        console.log(foundProduct);
         return foundProduct;
       } else {
         throw new Error("Cannot update product");
