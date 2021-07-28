@@ -6,7 +6,7 @@ const ProductSchema: Schema = new Schema(
         id: { type: Buffer, required: true, unique: true },
         name: { type: String, required: true },
         description: { type: String, required: true },
-        owner: { type: Buffer, required: true },
+        ownerId: { type: Buffer, required: true },
     },
     {
         timestamps: true

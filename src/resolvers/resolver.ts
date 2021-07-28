@@ -109,7 +109,7 @@ export const resolvers = {
         id,
         name,
         description,
-        owner: ownerId,
+        ownerId,
       });
 
       return postUser;
