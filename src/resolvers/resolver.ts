@@ -111,15 +111,13 @@ export const resolvers = {
     updateProduct: async (_: never, { input }, ctx) => {
       const ownerId = ctx.user.id;
       const {id,body} = input
-      console.log(id)
+      console.log(id.toString("base64"))
 
-      const bufferedId = Buffer.from(id)
-      console.log(bufferedId)
 
       const updatedAt = new Date();
       const cursor = Buffer.concat([Buffer.from(`${updatedAt.getTime()}`), Buffer.from(id)]);
 
-      const product = await Products.find({id:id});
+      const product = await Products.findOne({id});
       console.log(product)
 
 
