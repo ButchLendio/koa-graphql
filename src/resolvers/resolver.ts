@@ -1,12 +1,10 @@
 import Bcryptjs from "bcryptjs";
-import { EmailAddressResolver } from "graphql-scalars";
 import Users from "../models/users";
 import Products from "../models/products";
 import Token from "../config/jwt";
 import Jwt from "jsonwebtoken";
 import { generateId, EntityType } from "../schemas/generate-ids";
 import { UserInputError } from "apollo-server-errors";
-import BinaryResolver from '../schemas/scalars/binary'
 
 export const resolvers = {
   Query: {
@@ -110,7 +108,22 @@ export const resolvers = {
 
     updateProduct: async (_: never, { input }, ctx) => {
       const ownerId = ctx.user.id;
-      console.log(input,ownerId)
+      const {id,body} = input
+      console.log(id)
+
+      const bufferedId = Buffer.from(id)
+      console.log(bufferedId)
+
+      const updatedAt = new Date();
+      const cursor = Buffer.concat([Buffer.from(`${updatedAt.getTime()}`), Buffer.from(id)]);
+
+      const product = await Products.find({id:id});
+      console.log(product)
+
+
+      // const updatedProduct = await Products.updateOne(id, body, cursor);
+
+
 
       return true
 
@@ -121,8 +134,5 @@ export const resolvers = {
       //   ownerId,
       // });
     },
-  },
-
-  EmailAddress:EmailAddressResolver,
-  Binary:BinaryResolver,
+  }
 };
