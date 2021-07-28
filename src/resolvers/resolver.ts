@@ -45,7 +45,7 @@ export const resolvers = {
 
       const token = await Jwt.sign(
         {
-          id: postUser._id,
+          id: postUser.id,
         },
         Token.secret,
         {
