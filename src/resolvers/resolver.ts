@@ -1,10 +1,12 @@
 import Bcryptjs from "bcryptjs";
+import { EmailAddressResolver } from "graphql-scalars";
 import Users from "../models/users";
 import Products from "../models/products";
 import Token from "../config/jwt";
 import Jwt from "jsonwebtoken";
 import { generateId, EntityType } from "../schemas/generate-ids";
 import { UserInputError } from "apollo-server-errors";
+import BinaryResolver from '../schemas/scalars/binary'
 
 export const resolvers = {
   Query: {
@@ -108,7 +110,6 @@ export const resolvers = {
 
     updateProduct: async (_: never, { input }, ctx) => {
       const ownerId = ctx.user.id;
-
       console.log(input,ownerId)
 
       return true
@@ -121,4 +122,7 @@ export const resolvers = {
       // });
     },
   },
+
+  EmailAddress:EmailAddressResolver,
+  Binary:BinaryResolver,
 };

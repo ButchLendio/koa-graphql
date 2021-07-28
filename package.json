@@ -28,6 +28,7 @@
     "crypto": "^1.0.1",
     "faker": "^5.5.3",
     "graphql": "^15.5.1",
+    "graphql-scalars": "^1.10.0",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.1",
     "koa-body": "^4.2.0",
