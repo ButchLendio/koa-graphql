@@ -8,19 +8,14 @@ const BinaryResolver = new GraphQLScalarType({
     if (!(value instanceof Buffer)) {
       throw new Error("Invalid return type for Binary");
     }
-    console.log("1")
     return value.toString("base64");
   },
 
   parseValue(value) {
-    console.log("2")
-
     return Buffer.from(value, "base64");
   },
 
   parseLiteral(ast: any) {
-    console.log("3")
-
     return Buffer.from(ast.value, "base64");
   },
 });
