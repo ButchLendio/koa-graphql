@@ -99,11 +99,15 @@ export const resolvers = {
       const ownerId = ctx.user.id;
       const id = generateId(EntityType.Product);
 
+      const createdAt = new Date();
+      const cursor = Buffer.concat([Buffer.from(`${createdAt.getTime()}`), Buffer.from(id)]);
+
       return await Products.create({
         id,
         name,
         description,
         ownerId,
+        cursor
       });
     
     },
