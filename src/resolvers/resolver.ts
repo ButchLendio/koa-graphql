@@ -100,8 +100,10 @@ export const resolvers = {
 
       const id = generateId(EntityType.Product);
 
-      const cursor = Buffer.from(name)
-      
+      const cursor = Buffer.concat([
+        Buffer.from(name),
+        Buffer.from(id),
+      ]);
 
       return Products.create({
         id,
