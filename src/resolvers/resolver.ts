@@ -100,10 +100,7 @@ export const resolvers = {
 
       const id = generateId(EntityType.Product);
 
-      const cursor = Buffer.concat([
-        Buffer.from(name),
-        Buffer.from(id),
-      ]);
+      const cursor = Buffer.concat([Buffer.from(name), Buffer.from(id)]);
 
       return Products.create({
         id,
@@ -130,35 +127,24 @@ export const resolvers = {
         throw new Error("Product does not exist");
       }
 
-      console.log(`product.ownerId: ${Buffer.from(product.ownerId).toString("base64")}`)
-      console.log(`ownerId: ${ Buffer.from(ownerId).toString("base64")}`)
-      console.log(product.ownerId.toString("base64"))
-      console.log(Buffer.from(ownerId).toString("base64"))
-
-      if(product.ownerId.toString("base64") === Buffer.from(ownerId).toString("base64")){
-        console.log("qwerwer")
-      }
-
-
-      if (Buffer.compare(product.ownerId,ownerId)!==0){
+      if (
+        product.ownerId.toString("base64") !==
+        Buffer.from(ownerId).toString("base64")
+      ) {
         throw new Error("Not the owner of the product");
       }
 
-      console.log("WEW")
+      const updatedProduct = await Products.updateOne({ id }, body, cursor);
 
-
-      // const updatedProduct = await Products.updateOne(id, body, cursor);
-
-      return true;
-
-      // return await Products.create({
-      //   id,
-      //   name,
-      //   description,
-      //   ownerId,
-      // });
+      if (updatedProduct) {
+        const foundProduct = await Products.findOne({ id });
+        console.log(foundProduct);
+        return foundProduct;
+      } else {
+        throw new Error("Cannot update product");
       }
     },
+  },
 
   EmailAddress: EmailAddressResolver,
   Binary: BinaryResolver,

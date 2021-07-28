@@ -9,7 +9,7 @@ export const mutations = gql`
 
     createProduct(input: CreateProductInput!): Product! @private
 
-    updateProduct(input: UpdateProductInput!): Boolean @private
+    updateProduct(input: UpdateProductInput!): Product! @private
 
     # deleteProduct(input: DeleteProductInput!): Boolean! @private
   }
