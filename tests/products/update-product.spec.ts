@@ -23,7 +23,7 @@ const updateProductMutation = `
             }
         `;
 
-describe.only("Mutation.updateProduct", () => {
+describe("Mutation.updateProduct", () => {
   after(async function () {
     await Products.deleteMany({});
   });

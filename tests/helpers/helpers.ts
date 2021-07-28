@@ -54,12 +54,12 @@ export async function getToken(fakeUser: {
 
 export async function addFakeProduct() {
   const generateProduct = generateFakeProduct()
-  const user = await Users.find()
+  const [user] = await Users.find()
   const id = generateId(EntityType.Product);
   const cursor = Buffer.concat([
         Buffer.from(generateProduct.name),
         Buffer.from(id),
       ]);
-  const product = { ...generateProduct, id,cursor,ownerId: R.head(user).id }
+  const product = { ...generateProduct, id,cursor,ownerId: user.id }
   return Products.create(product)
 }
