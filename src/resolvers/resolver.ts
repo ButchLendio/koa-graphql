@@ -16,7 +16,6 @@ export const resolvers = {
   },
   Product: {
     owner: async (root, _params, _context) => {
-      console.log(root)
       return Users.findOne({ id: root.ownerId });
     },
   },
