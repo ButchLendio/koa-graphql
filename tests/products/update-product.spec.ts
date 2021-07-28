@@ -96,7 +96,6 @@ describe("Mutation.updateProduct", () => {
       .set("Authorization", `Bearer ${token}`);
 
       const body = JSON.parse(res.text);
-      console.log(body)
     expect(body.errors[0].message).to.equal("Not the owner of the product");
 
   });
