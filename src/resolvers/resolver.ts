@@ -79,7 +79,7 @@ export const resolvers = {
 
         const token = await Jwt.sign(
           {
-            id: foundUser._id,
+            id: foundUser.id,
           },
           Token.secret,
           {
@@ -117,7 +117,6 @@ export const resolvers = {
     updateProduct: async (_: never, { input }, ctx) => {
       const ownerId = ctx.user.id;
       const { id, body } = input;
-      console.log(id.toString("base64"));
 
       const updatedAt = new Date();
       const cursor = Buffer.concat([
@@ -126,14 +125,21 @@ export const resolvers = {
       ]);
 
       const product = await Products.findOne({ id });
-      console.log(product);
 
       if (!product) {
         throw new Error("Product does not exist");
       }
-      if (product.ownerId !== ownerId) {
+
+      console.log(`product.ownerId: ${ product.ownerId}`)
+      console.log(`ownerId: ${ Buffer.from(ownerId).toString("base64")}`)
+      console.log(ownerId)
+
+      if (Buffer.compare(product.ownerId,ownerId)!==0){
         throw new Error("Not the owner of the product");
       }
+
+      console.log("WEW")
+
 
       // const updatedProduct = await Products.updateOne(id, body, cursor);
 
