@@ -1,7 +1,6 @@
 import Request from "supertest";
 import { internet, name, commerce } from "faker";
 import { startServer } from "../../src/index";
-import Products from "../../src/models/products";
 
 
 export function generateFakeUser() {
@@ -75,7 +74,3 @@ export async function addFakeProduct(fakeProduct:{name:string,description:string
 
   return(res)
 }
-// export async function populateProduct(count: number = 5) {
-//   Products.create(R.times(() => generateFakeProduct())(count))
-
-// }
