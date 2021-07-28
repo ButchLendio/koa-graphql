@@ -100,10 +100,7 @@ export const resolvers = {
 
       const id = generateId(EntityType.Product);
 
-      const cursor = Buffer.concat([
-        Buffer.from(name),
-        Buffer.from(id),
-      ]);
+      const cursor = Buffer.concat([Buffer.from(name), Buffer.from(id)]);
 
       return Products.create({
         id,
@@ -116,7 +113,7 @@ export const resolvers = {
 
     deleteProduct: async (_: never, { input }, ctx) => {
       const ownerId = ctx.user.id;
-      const { id, } = input;
+      const { id } = input;
 
       const foundProduct = await Products.findOne({ id });
 
@@ -131,11 +128,11 @@ export const resolvers = {
         throw new Error("Not the owner of the product");
       }
 
-      const result = await foundProduct.deleteOne()
-      if(result){
-        return true
-      }else{
-        throw new Error("Error on delete")
+      const result = await foundProduct.deleteOne();
+      if (result) {
+        return true;
+      } else {
+        throw new Error("Error on delete");
       }
     },
   },
