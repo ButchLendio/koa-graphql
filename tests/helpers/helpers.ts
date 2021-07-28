@@ -2,6 +2,10 @@ import Request from "supertest";
 import { internet, name, commerce } from "faker";
 import { startServer } from "../../src/index";
 import Users from "../../src/models/users";
+import Products from "../../src/models/products";
+import { generateId, EntityType } from "../../src/schemas/generate-ids";
+
+
 import R from 'ramda';
 
 
@@ -51,10 +55,13 @@ export async function getToken(fakeUser: {
 }
 
 export async function addFakeProduct() {
-
+  const generateProduct = generateFakeProduct()
   const user = await Users.find()
-  console.log(R.head(user))
-  const product = { ...generateFakeProduct(), ownerId: user }
-
-
+  const id = generateId(EntityType.Product);
+  const cursor = Buffer.concat([
+        Buffer.from(generateProduct.name),
+        Buffer.from(id),
+      ]);
+  const product = { ...generateProduct, id,cursor,ownerId: R.head(user).id }
+  return Products.create(product)
 }
