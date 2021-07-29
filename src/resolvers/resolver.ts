@@ -2,12 +2,12 @@ import Bcryptjs from "bcryptjs";
 import Users from "../models/users";
 import Products from "../models/products";
 import Token from "../config/jwt";
+import R from "ramda";
 import Jwt from "jsonwebtoken";
 import { generateId, EntityType } from "../schemas/generate-ids";
 import { UserInputError } from "apollo-server-errors";
 import { EmailAddressResolver } from "graphql-scalars";
 import BinaryResolver from "../schemas/scalars/binary";
-import R from "ramda";
 
 export const resolvers = {
   Query: {
@@ -15,10 +15,27 @@ export const resolvers = {
       return "WEW";
     },
 
-    me:(_: never,_args:never,ctx)=>{
-      return Users.findOne({id:ctx.user.id})
-    }
+    node: async (_parent: unknown, params: { id: Buffer }) => {
+      const type = R.head(params.id as unknown as [number]);
+
+      if (type === EntityType.Account) {
+        return Users.findOne({ id: params.id });
+      }
+
+      if (type === EntityType.Product) {
+        return Products.findOne({ id: params.id });
+      }
+      
+      throw new UserInputError("Invalid Id") 
+    },
   },
+  Node: {
+    __resolveType(root: { id: Buffer }) {
+      const type = R.head(root.id as unknown as [number]);
+      return EntityType[type];
+    },
+  },
+
   Product: {
     owner: async (root, _params, _context) => {
       return Users.findOne({ id: root.ownerId });
