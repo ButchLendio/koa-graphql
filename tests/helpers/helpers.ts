@@ -68,3 +68,8 @@ export async function addFakeUserRegister(params: { ownerId: Buffer }) {
       password: await Bcryptjs.hash(generateUserInfo.password, 10),
     });
 }
+
+export async function populateProduct(count: number = 5) {
+  Products.create(R.times(() => generateFakeProduct())(count))
+
+}

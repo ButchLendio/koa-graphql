@@ -5,8 +5,8 @@ import { startServer } from "../../src/index";
 import Products from "../../src/models/products";
 import Users from "../../src/models/users";
 import {
-  generateFakeUser,
-  generateFakeProduct,
+  addFakeProduct,
+  addFakeUserRegister,
   getToken,
 } from "../helpers/helpers";
 import { generateId, EntityType } from "../../src/schemas/generate-ids";
@@ -29,32 +29,29 @@ const nodeQuery = `
 
 describe("Query.node", () => {
   after(async function () {
-    await Products.deleteMany({});
-    await Users.deleteMany({});
-
+    // await Products.deleteMany({});
+    // await Users.deleteMany({});
   });
 
-  it("should return user", async function () {
-    const createdUser = generateFakeUser();
+  it.only("should return user", async function () {
+    const ownerId = generateId(EntityType.Account);
+    await addFakeUserRegister({ ownerId });
+    const foundUser = await Users.findOne({id:ownerId})
+    const product = await addFakeProduct({ ownerId });
+    const token = await getToken({ ownerId });
 
-    await Users.create({
-      ...createdUser,
-      id: generateId(EntityType.Account),
-      password: await Bcryptjs.hash(createdUser.password, 10),
-    });
-    const token = await getToken(createdUser);
 
-    const res = await Request(startServer)
+    const { body } = await Request(startServer)
       .post("/graphql")
       .send({
         query: nodeQuery,
         variables: {
-          id: generateFakeProduct(),
+            id: product.id.toString("base64"),
         },
       })
       .set("Authorization", `Bearer ${token}`);
 
-    expect(res.statusCode).to.equal(200);
+    expect(body.data.node.emailAddress).to.equal(foundUser.emailAddress);
   });
 
 //   it("should error if no token", async function () {

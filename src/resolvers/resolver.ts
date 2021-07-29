@@ -8,7 +8,6 @@ import { generateId, EntityType } from "../schemas/generate-ids";
 import { UserInputError } from "apollo-server-errors";
 import { EmailAddressResolver } from "graphql-scalars";
 import BinaryResolver from "../schemas/scalars/binary";
-import R from "ramda";
 
 export const resolvers = {
   Query: {
