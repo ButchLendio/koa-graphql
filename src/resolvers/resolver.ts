@@ -7,6 +7,7 @@ import { generateId, EntityType } from "../schemas/generate-ids";
 import { UserInputError } from "apollo-server-errors";
 import { EmailAddressResolver } from "graphql-scalars";
 import BinaryResolver from "../schemas/scalars/binary";
+import R from "ramda";
 
 export const resolvers = {
   Query: {
@@ -79,7 +80,7 @@ export const resolvers = {
 
         const token = await Jwt.sign(
           {
-            id: foundUser._id,
+            id: foundUser.id,
           },
           Token.secret,
           {
@@ -100,10 +101,7 @@ export const resolvers = {
 
       const id = generateId(EntityType.Product);
 
-      const cursor = Buffer.concat([
-        Buffer.from(name),
-        Buffer.from(id),
-      ]);
+      const cursor = Buffer.concat([Buffer.from(name), Buffer.from(id)]);
 
       return Products.create({
         id,
@@ -112,6 +110,34 @@ export const resolvers = {
         ownerId,
         cursor,
       });
+    },
+
+    updateProduct: async (_: never, { input }, ctx) => {
+      const { id: ownerId } = ctx.user;
+      const { id, body } = input;
+
+      const product = await Products.findOne({ id });
+
+      if (!product) {
+        throw new UserInputError("Product does not exist");
+      }
+      if (!R.equals(product.ownerId, ownerId)) {
+        throw new UserInputError("Not the owner of the product");
+      }
+      if (body.name) {
+        product.name = body.name;
+        product.cursor = Buffer.concat([
+          Buffer.from(body.name),
+          Buffer.from(product.id),
+        ]);
+      }
+      if (body.description) {
+        product.description = body.description;
+      }
+
+     
+      await product.save();
+      return product;
     },
   },
 
