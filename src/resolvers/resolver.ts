@@ -13,6 +13,11 @@ export const resolvers = {
     hello: (): String => {
       return "WEW";
     },
+
+    node:async(node) =>{
+      console.log(node)
+      return true
+    }
   },
   Product: {
     owner: async (root, _params, _context) => {

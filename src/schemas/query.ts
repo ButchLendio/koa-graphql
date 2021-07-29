@@ -3,7 +3,7 @@ import { gql } from "apollo-server-koa";
 export const query= gql`
 
 type Query {
-  node(id: Binary!): Node!
+  node(id: Binary!): Boolean
 
   hello:String
 
