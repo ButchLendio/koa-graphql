@@ -119,11 +119,11 @@ export const resolvers = {
       const foundProduct = await Products.findOne({ id });
 
       if (!foundProduct) {
-        throw new Error("Product does not exist");
+        throw new UserInputError("Product does not exist");
       }
 
       if (!R.equals(foundProduct.ownerId, ownerId)){
-        throw new Error("Not the owner of the product");
+        throw new UserInputError("Not the owner of the product");
       }
 
       await foundProduct.deleteOne();
