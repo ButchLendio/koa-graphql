@@ -8,8 +8,7 @@ import { generateId, EntityType } from "../schemas/generate-ids";
 import { UserInputError } from "apollo-server-errors";
 import { EmailAddressResolver } from "graphql-scalars";
 import BinaryResolver from "../schemas/scalars/binary";
-// import User from "interfaces/users";
-// import Product from "interfaces/products";
+import R from "ramda";
 
 export const resolvers = {
   Query: {
@@ -38,7 +37,7 @@ export const resolvers = {
 
   Product: {
     owner: async (root, _params, _context) => {
-      return Users.findOne({ _id: root.ownerId });
+      return Users.findOne({ id: root.ownerId });
     },
   },
 
@@ -101,7 +100,7 @@ export const resolvers = {
 
         const token = await Jwt.sign(
           {
-            id: foundUser._id,
+            id: foundUser.id,
           },
           Token.secret,
           {
@@ -132,6 +131,51 @@ export const resolvers = {
         cursor,
       });
     },
+
+    updateProduct: async (_: never, { input }, ctx) => {
+      const { id: ownerId } = ctx.user;
+      const { id, body } = input;
+      const product = await Products.findOne({ id });
+
+      if (!product) {
+        throw new UserInputError("Product does not exist");
+      }
+      if (!R.equals(product.ownerId, ownerId)) {
+        throw new UserInputError("Not the owner of the product");
+      }
+      if (body.name) {
+        product.name = body.name;
+        product.cursor = Buffer.concat([
+          Buffer.from(body.name),
+          Buffer.from(product.id),
+        ]);
+      }
+      if (body.description) {
+        product.description = body.description;
+      }
+
+     
+      await product.save();
+      return product;
+    },
+
+    deleteProduct: async (_: never, { input }, ctx) => {
+      const ownerId = ctx.user.id;
+      const { id } = input;
+
+      const foundProduct = await Products.findOne({ id });
+
+      if (!foundProduct) {
+        throw new UserInputError("Product does not exist");
+      }
+
+      if (!R.equals(foundProduct.ownerId, ownerId)){
+        throw new UserInputError("Not the owner of the product");
+      }
+
+      await foundProduct.deleteOne();
+      return true;
+    }
   },
 
   EmailAddress: EmailAddressResolver,

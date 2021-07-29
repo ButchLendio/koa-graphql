@@ -9,9 +9,9 @@ export const mutations = gql`
 
     createProduct(input: CreateProductInput!): Product! @private
 
-    # updateProduct(input: UpdateProductInput!): Product! @private
+    updateProduct(input: UpdateProductInput!): Product! @private
 
-    # deleteProduct(input: DeleteProductInput!): Boolean! @private
+    deleteProduct(input: DeleteProductInput!): Boolean! @private
   }
 
   input SignUpInput {
@@ -37,8 +37,8 @@ export const mutations = gql`
   }
 
   input UpdateProductBody {
-    firstname: String
-    lastname: String
+    name: String
+    description: String
   }
 
   input DeleteProductInput {
