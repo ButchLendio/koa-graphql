@@ -1,11 +1,12 @@
 import Request from "supertest";
 import { internet, name, commerce } from "faker";
 import { startServer } from "../../src/index";
+import Token from "../../src/config/jwt";
 import Users from "../../src/models/users";
 import Products from "../../src/models/products";
 import { generateId, EntityType } from "../../src/schemas/generate-ids";
-import R from 'ramda';
-
+import R from "ramda";
+import Jwt from "jsonwebtoken";
 
 export function generateFakeUser() {
   return {
@@ -27,39 +28,36 @@ export async function getToken(fakeUser: {
   emailAddress: string;
   password: string;
 }) {
-  const authenticatepMutation = `
-    mutation($input:AuthenticateInput!){
-      authenticate(input: $input){
-            token
-        }
+  const foundUser = await Users.findOne({
+    emailAddress: fakeUser.emailAddress,
+  });
+
+  const timeInMilliseconds = new Date().getTime();
+  const expirationTime = timeInMilliseconds + Number(Token.expireTime) * 10_000;
+  const expireTimeInSeconds = Math.floor(expirationTime / 1_000);
+
+  const token = await Jwt.sign(
+    {
+      id: foundUser?.id,
+    },
+    Token.secret,
+    {
+      issuer: Token.issUser,
+      algorithm: "HS256",
+      expiresIn: expireTimeInSeconds,
     }
-`;
+  );
 
-  const res = await Request(startServer)
-    .post("/graphql")
-    .send({
-      query: authenticatepMutation,
-      variables: {
-        input: {
-          emailAddress: fakeUser.emailAddress,
-          password: fakeUser.password,
-        },
-      },
-    });
-
-    const body =JSON.parse(res.text)
-
-  return body.data.authenticate.token;
+  return token ;
 }
 
-export async function addFakeProduct() {
-  const generateProduct = generateFakeProduct()
-  const [user] = await Users.find()
-  const id = generateId(EntityType.Product);
+export async function addFakeProduct(body: Object) {
+  const generateProduct = generateFakeProduct();
+  const id = body;
   const cursor = Buffer.concat([
-        Buffer.from(generateProduct.name),
-        Buffer.from(id),
-      ]);
-  const product = { ...generateProduct, id,cursor,ownerId: user.id }
-  return Products.create(product)
+    Buffer.from(generateProduct.name),
+    Buffer.from(id),
+  ]);
+  const product = { ...generateProduct, id, cursor, ownerId: id };
+  return Products.create(product);
 }

@@ -7,6 +7,7 @@ import { generateId, EntityType } from "../schemas/generate-ids";
 import { UserInputError } from "apollo-server-errors";
 import { EmailAddressResolver } from "graphql-scalars";
 import BinaryResolver from "../schemas/scalars/binary";
+import R from 'ramda';
 
 export const resolvers = {
   Query: {
@@ -115,32 +116,23 @@ export const resolvers = {
       const { id: ownerId } = ctx.user;
       const { id, body } = input;
 
-      const updatedAt = new Date();
-      const cursor = Buffer.concat([
-        Buffer.from(`${updatedAt.getTime()}`),
-        Buffer.from(id),
-      ]);
-
       const product = await Products.findOne({ id });
 
       if (!product) {
         throw new Error("Product does not exist");
       }
+      if (body.name) {
+        body.cursor = Buffer.concat([
+          Buffer.from(body.name),
+          Buffer.from(product.id),
+        ]);
+      }
 
-      if (
-        product.ownerId.toString("base64") !==
-        Buffer.from(ownerId).toString("base64")
-      ) {
+      if (!R.equals(product.ownerId, ownerId)){
         throw new Error("Not the owner of the product");
       }
 
-      const updatedProduct = await Products.updateOne({ id }, body, cursor);
-
-      if (updatedProduct) {
-        return Products.findOne({ id });
-      } else {
-        throw new Error("Cannot update product");
-      }
+      return Products.findOneAndUpdate({id},body,{returnOriginal:false})
     },
   },
 
