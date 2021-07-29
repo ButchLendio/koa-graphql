@@ -39,15 +39,12 @@ describe("Query.node", () => {
     const product = await addFakeProduct({ ownerId });
     const token = await getToken({ ownerId });
 
-    console.log(product.id.toString("base64"))
-
-
     const { body } = await Request(startServer)
       .post("/graphql")
       .send({
         query: nodeQuery,
         variables: {
-            id: product.id.toString("base64"),
+          id: product.id.toString("base64"),
         },
       })
       .set("Authorization", `Bearer ${token}`);
@@ -55,21 +52,20 @@ describe("Query.node", () => {
     expect(body.data.node.name).to.equal(product.name);
   });
 
-  it("should return user", async function () {
-    const ownerId = generateId(EntityType.Account);
-    const user = await addFakeUserRegister({ ownerId });
-    const token = await getToken({ ownerId });
+  it.only("should error if ID is invalid", async function () {
+    const mockId = Buffer.from("test");
 
     const { body } = await Request(startServer)
       .post("/graphql")
       .send({
         query: nodeQuery,
         variables: {
-            id: user.id.toString("base64"),
+          id: mockId
         },
       })
-      .set("Authorization", `Bearer ${token}`);
 
-    expect(body.data.node.emailAddress).to.equal(user.emailAddress);
+      console.log(body)
+
+    expect(body.errors[0].message).to.equal("Invalid Id");
   });
 });

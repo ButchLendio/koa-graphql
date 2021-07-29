@@ -25,6 +25,8 @@ export const resolvers = {
       if (type === EntityType.Product) {
         return Products.findOne({ id: params.id });
       }
+      
+      throw new UserInputError("Invalid Id") 
     },
   },
   Node: {
