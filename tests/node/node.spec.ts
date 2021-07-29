@@ -35,7 +35,6 @@ describe("Query.node", () => {
 
   it("should return product", async function () {
     const ownerId = generateId(EntityType.Account);
-    await addFakeUserRegister({ ownerId });
     const product = await addFakeProduct({ ownerId });
     const token = await getToken({ ownerId });
 
@@ -50,6 +49,24 @@ describe("Query.node", () => {
       .set("Authorization", `Bearer ${token}`);
 
     expect(body.data.node.name).to.equal(product.name);
+  });
+
+  it("should return user", async function () {
+    const ownerId = generateId(EntityType.Account);
+    const user = await addFakeUserRegister({ ownerId });
+    const token = await getToken({ ownerId });
+
+    const { body } = await Request(startServer)
+      .post("/graphql")
+      .send({
+        query: nodeQuery,
+        variables: {
+          id: user.id.toString("base64"),
+        },
+      })
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(body.data.node.emailAddress).to.equal(user.emailAddress);
   });
 
   it("should error if ID is invalid", async function () {
