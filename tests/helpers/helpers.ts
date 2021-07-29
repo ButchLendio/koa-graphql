@@ -67,6 +67,4 @@ export async function addFakeUserRegister(params: { ownerId: Buffer }) {
       id,
       password: await Bcryptjs.hash(generateUserInfo.password, 10),
     });
-
-
 }

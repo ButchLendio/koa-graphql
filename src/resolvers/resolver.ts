@@ -115,7 +115,6 @@ export const resolvers = {
     updateProduct: async (_: never, { input }, ctx) => {
       const { id: ownerId } = ctx.user;
       const { id, body } = input;
-
       const product = await Products.findOne({ id });
 
       if (!product) {
@@ -139,6 +138,24 @@ export const resolvers = {
       await product.save();
       return product;
     },
+
+    deleteProduct: async (_: never, { input }, ctx) => {
+      const ownerId = ctx.user.id;
+      const { id } = input;
+
+      const foundProduct = await Products.findOne({ id });
+
+      if (!foundProduct) {
+        throw new UserInputError("Product does not exist");
+      }
+
+      if (!R.equals(foundProduct.ownerId, ownerId)){
+        throw new UserInputError("Not the owner of the product");
+      }
+
+      await foundProduct.deleteOne();
+      return true;
+    }
   },
 
   EmailAddress: EmailAddressResolver,
