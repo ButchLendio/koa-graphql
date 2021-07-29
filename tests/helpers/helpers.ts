@@ -49,12 +49,13 @@ export async function getToken(params: { ownerId: Buffer }) {
 
 export async function addFakeProduct(params: { ownerId: Buffer }) {
   const generateProduct = generateFakeProduct();
-  const id = params.ownerId;
+  const ownerId = params.ownerId;
+  const id = generateId(EntityType.Product)
   const cursor = Buffer.concat([
     Buffer.from(generateProduct.name),
     Buffer.from(id),
   ]);
-  const product = { ...generateProduct, id, cursor, ownerId: id };
+  const product = { ...generateProduct, id, cursor, ownerId };
   return Products.create(product);
 }
 
