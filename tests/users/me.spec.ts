@@ -10,7 +10,7 @@ describe("Mutation.signUp", () => {
     // await Users.deleteMany({});
   });
   const meQuery = `
-            query(){
+            query{
                 me{
                     lastname
                     firstname
