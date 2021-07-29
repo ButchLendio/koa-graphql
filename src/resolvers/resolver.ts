@@ -7,6 +7,7 @@ import { generateId, EntityType } from "../schemas/generate-ids";
 import { UserInputError } from "apollo-server-errors";
 import { EmailAddressResolver } from "graphql-scalars";
 import BinaryResolver from "../schemas/scalars/binary";
+import R from "ramda"
 
 export const resolvers = {
   Query: {
@@ -121,19 +122,12 @@ export const resolvers = {
         throw new Error("Product does not exist");
       }
 
-      if (
-        foundProduct.ownerId.toString("base64") !==
-        Buffer.from(ownerId).toString("base64")
-      ) {
+      if (!R.equals(foundProduct.ownerId, ownerId)){
         throw new Error("Not the owner of the product");
       }
 
-      const result = await foundProduct.deleteOne();
-      if (result) {
-        return true;
-      } else {
-        throw new Error("Error on delete");
-      }
+      await foundProduct.deleteOne();
+      return true;
     },
   },
 
