@@ -14,6 +14,10 @@ export const resolvers = {
     hello: (): String => {
       return "WEW";
     },
+
+    me:(_: never,_args:never,ctx)=>{
+      return Users.findOne({id:ctx.user.id})
+    }
   },
   Product: {
     owner: async (root, _params, _context) => {

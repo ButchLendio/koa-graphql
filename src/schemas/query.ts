@@ -1,15 +1,12 @@
 import { gql } from "apollo-server-koa";
 
 export const query= gql`
-
 type Query {
   node(id: Binary!): Node!
 
   hello:String
 
-  # me: Account! @private
-
-
+  me: Account! @private
 
   products(
     first: Int = 10
