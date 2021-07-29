@@ -24,14 +24,8 @@ export function generateFakeProduct() {
   };
 }
 
-export async function getToken(fakeUser: {
-  emailAddress: string;
-  password: string;
-}) {
-  const foundUser = await Users.findOne({
-    emailAddress: fakeUser.emailAddress,
-  });
-
+export async function getToken(id) {
+  const foundUser = await Users.findOne({id});
   const timeInMilliseconds = new Date().getTime();
   const expirationTime = timeInMilliseconds + Number(Token.expireTime) * 10_000;
   const expireTimeInSeconds = Math.floor(expirationTime / 1_000);

@@ -1,6 +1,6 @@
 import Request from "supertest";
 import Bcryptjs from "bcryptjs";
-import R from 'ramda'
+import R from "ramda";
 import { expect } from "chai";
 import { startServer } from "../../src/index";
 import Products from "../../src/models/products";
@@ -24,21 +24,21 @@ const updateProductMutation = `
         `;
 
 describe("Mutation.updateProduct", () => {
-  afterEach(async function () {
+  after(async function () {
     await Products.deleteMany({});
   });
 
   it("should update product", async function () {
     const createdUser = generateFakeUser();
-    const bodyProduct = generateFakeProduct()
-    const id =  generateId(EntityType.Account)
+    const bodyProduct = generateFakeProduct();
+    const id = generateId(EntityType.Account);
     await Users.create({
       ...createdUser,
       id,
       password: await Bcryptjs.hash(createdUser.password, 10),
     });
-    const product = await addFakeProduct(id)
-    const token = await getToken(createdUser);
+    const product = await addFakeProduct(id);
+    const token = await getToken(id);
 
     const { body } = await Request(startServer)
       .post("/graphql")
@@ -46,26 +46,26 @@ describe("Mutation.updateProduct", () => {
         query: updateProductMutation,
         variables: {
           input: {
-            id:product.id.toString("base64"),
-            body:bodyProduct,
-          }
+            id: product.id.toString("base64"),
+            body: bodyProduct,
+          },
         },
       })
       .set("Authorization", `Bearer ${token}`);
-    
-    expect(body.data.updateProduct.name).to.equal(bodyProduct.name)
+
+    expect(body.data.updateProduct.name).to.equal(bodyProduct.name);
   });
 
   it("should error if not the owner", async function () {
     const createdUser = generateFakeUser();
-    const id =  generateId(EntityType.Account)
+    const id = generateId(EntityType.Account);
     await Users.create({
       ...createdUser,
       id,
       password: await Bcryptjs.hash(createdUser.password, 10),
     });
-    const token = await getToken(createdUser);
-    const product = await addFakeProduct(generateId(EntityType.Account))
+    const token = await getToken(id);
+    const product = await addFakeProduct(generateId(EntityType.Account));
 
     const { body } = await Request(startServer)
       .post("/graphql")
@@ -73,26 +73,25 @@ describe("Mutation.updateProduct", () => {
         query: updateProductMutation,
         variables: {
           input: {
-            id:product.id.toString("base64"),
-            body:generateFakeProduct(),
-          }
+            id: product.id.toString("base64"),
+            body: generateFakeProduct(),
+          },
         },
       })
       .set("Authorization", `Bearer ${token}`);
 
     expect(body.errors[0].message).to.equal("Not the owner of the product");
-
   });
 
   it("should error if no token", async function () {
     const createdUser = generateFakeUser();
-    const id =  generateId(EntityType.Account)
+    const id = generateId(EntityType.Account);
     await Users.create({
       ...createdUser,
       id,
       password: await Bcryptjs.hash(createdUser.password, 10),
     });
-    const product = await addFakeProduct(generateId(EntityType.Account))
+    const product = await addFakeProduct(generateId(EntityType.Account));
 
     const { body } = await Request(startServer)
       .post("/graphql")
@@ -100,23 +99,24 @@ describe("Mutation.updateProduct", () => {
         query: updateProductMutation,
         variables: {
           input: {
-            id:product.id.toString("base64"),
-            body:generateFakeProduct(),
-          }
+            id: product.id.toString("base64"),
+            body: generateFakeProduct(),
+          },
         },
-      })
+      });
 
-      expect(body.errors[0].message).to.equal("Invalid authentication header.");
+    expect(body.errors[0].message).to.equal("Invalid authentication header.");
   });
 
   it("should Error if product does not exist", async function () {
     const createdUser = generateFakeUser();
+    const id = generateId(EntityType.Account);
     await Users.create({
       ...createdUser,
-      id: generateId(EntityType.Account),
+      id,
       password: await Bcryptjs.hash(createdUser.password, 10),
     });
-    const token = await getToken(createdUser);
+    const token = await getToken(id);
 
     const { body } = await Request(startServer)
       .post("/graphql")
@@ -124,13 +124,12 @@ describe("Mutation.updateProduct", () => {
         query: updateProductMutation,
         variables: {
           input: {
-            id:"ahksdjhfkjalhsdfkjh",
-            body:generateFakeProduct(),
-          }
+            id: "123sdse1eas",
+            body: generateFakeProduct(),
+          },
         },
       })
       .set("Authorization", `Bearer ${token}`);
-
-      expect(body.errors[0].message).to.equal("Product does not exist");
+    expect(body.errors[0].message).to.equal("Product does not exist");
   });
 });

@@ -119,20 +119,22 @@ export const resolvers = {
       const product = await Products.findOne({ id });
 
       if (!product) {
-        throw new Error("Product does not exist");
+        throw new UserInputError("Product does not exist");
       }
       if (body.name) {
-        body.cursor = Buffer.concat([
+        product.name  = body.name;
+        product.cursor = Buffer.concat([
           Buffer.from(body.name),
           Buffer.from(product.id),
         ]);
       }
 
       if (!R.equals(product.ownerId, ownerId)){
-        throw new Error("Not the owner of the product");
+        throw new UserInputError("Not the owner of the product");
       }
 
-      return Products.findOneAndUpdate({id},body,{returnOriginal:false})
+      await product.save();
+      return product;
     },
   },
 
