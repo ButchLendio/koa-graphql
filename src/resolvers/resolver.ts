@@ -121,6 +121,9 @@ export const resolvers = {
       if (!product) {
         throw new UserInputError("Product does not exist");
       }
+      if (!R.equals(product.ownerId, ownerId)) {
+        throw new UserInputError("Not the owner of the product");
+      }
       if (body.name) {
         product.name = body.name;
         product.cursor = Buffer.concat([
@@ -132,10 +135,7 @@ export const resolvers = {
         product.description = body.description;
       }
 
-      if (!R.equals(product.ownerId, ownerId)) {
-        throw new UserInputError("Not the owner of the product");
-      }
-
+     
       await product.save();
       return product;
     },
