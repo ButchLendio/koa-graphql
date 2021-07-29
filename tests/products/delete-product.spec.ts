@@ -3,7 +3,6 @@ import { expect } from "chai";
 import { startServer } from "../../src/index";
 import Products from "../../src/models/products";
 import {
-  generateFakeProduct,
   addFakeProduct,
   addFakeUserRegister,
   getToken,
