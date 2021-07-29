@@ -93,7 +93,7 @@ describe("Mutation.deleteProduct", () => {
         query: deleteProductMutation,
         variables: {
           input: {
-            id: "akjshdkjahsdkjah",
+            id: generateId(EntityType.Account).toString("base64"),
           },
         },
       })

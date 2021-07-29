@@ -109,7 +109,7 @@ describe("Mutation.updateProduct", () => {
         query: updateProductMutation,
         variables: {
           input: {
-            id: "akjshdkjahsdkjah",
+            id: generateId(EntityType.Account).toString("base64"),
             body: updateProductBody,
           },
         },
