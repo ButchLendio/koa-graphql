@@ -27,13 +27,13 @@ describe("Mutation.createProduct", () => {
 
   it("should create product", async function () {
     const createdUser = generateFakeUser();
-    const id = generateId(EntityType.Account);
+    const ownerId = generateId(EntityType.Account);
     await Users.create({
       ...createdUser,
-      id,
+      id:ownerId,
       password: await Bcryptjs.hash(createdUser.password, 10),
     });
-    const token = await getToken(id);
+    const token = await getToken({ownerId});
 
     const res = await Request(startServer)
       .post("/graphql")
