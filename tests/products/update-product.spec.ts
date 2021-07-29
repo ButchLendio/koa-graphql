@@ -1,4 +1,4 @@
-import Request from "supertest";
+import Request from "supertest";0
 import { expect } from "chai";
 import { startServer } from "../../src/index";
 import Products from "../../src/models/products";
@@ -10,51 +10,59 @@ import {
 } from "../helpers/helpers";
 import { generateId, EntityType } from "../../src/schemas/generate-ids";
 
-const deleteProductMutation = `
-            mutation($input:DeleteProductInput!){
-                deleteProduct(input: $input)
+const updateProductMutation = `
+            mutation($input:UpdateProductInput!){
+                updateProduct(input: $input){
+                    id
+                    name
+                    description
+                }
             }
         `;
 
-describe("Mutation.deleteProduct", () => {
+describe("Mutation.updateProduct", () => {
   after(async function () {
     await Products.deleteMany({});
   });
 
-  it("should delete product", async function () {
+  it("should update product", async function () {
+    const updateProductBody  = generateFakeProduct();
     const ownerId = generateId(EntityType.Account);
 
-    await addFakeUserRegister({ ownerId });
-    const product = await addFakeProduct({ ownerId });
-    const token = await getToken({ ownerId });
+    await addFakeUserRegister({ownerId});
+    const product = await addFakeProduct({ownerId});
+    const token = await getToken({ownerId});
+
     const { body } = await Request(startServer)
       .post("/graphql")
       .send({
-        query: deleteProductMutation,
+        query: updateProductMutation,
         variables: {
           input: {
             id: product.id.toString("base64"),
+            body: updateProductBody ,
           },
         },
       })
       .set("Authorization", `Bearer ${token}`);
 
-    expect(body.data.deleteProduct).to.true;
+    expect(body.data.updateProduct.name).to.equal(updateProductBody.name);
   });
 
   it("should error if not the owner", async function () {
     const ownerId = generateId(EntityType.Account);
-
-    await addFakeUserRegister({ ownerId });
+    await addFakeUserRegister({ownerId});
+    const token = await getToken({ownerId});
     const product = await addFakeProduct({ownerId:generateId(EntityType.Account)});
-    const token = await getToken({ ownerId });
+
     const { body } = await Request(startServer)
       .post("/graphql")
       .send({
-        query: deleteProductMutation,
+        query: updateProductMutation,
         variables: {
           input: {
             id: product.id.toString("base64"),
+            body: generateFakeProduct(),
           },
         },
       })
@@ -65,41 +73,41 @@ describe("Mutation.deleteProduct", () => {
 
   it("should error if no token", async function () {
     const ownerId = generateId(EntityType.Account);
-
-    await addFakeUserRegister({ ownerId });
+    await addFakeUserRegister({ownerId});
     const product = await addFakeProduct({ownerId:generateId(EntityType.Account)});
-    const token = await getToken({ ownerId });
+
     const { body } = await Request(startServer)
       .post("/graphql")
       .send({
-        query: deleteProductMutation,
+        query: updateProductMutation,
         variables: {
           input: {
             id: product.id.toString("base64"),
+            body: generateFakeProduct(),
           },
         },
-      })
+      });
 
     expect(body.errors[0].message).to.equal("Invalid authentication header.");
   });
 
-  it("should Error if product does not exist", async function () {
+  it.only("should Error if product does not exist", async function () {
     const ownerId = generateId(EntityType.Account);
-    await addFakeUserRegister({ ownerId });
-    const token = await getToken({ ownerId });
+    const token = await getToken({ownerId});
+    
     const { body } = await Request(startServer)
       .post("/graphql")
       .send({
-        query: deleteProductMutation,
+        query: updateProductMutation,
         variables: {
           input: {
             id: "akjshdkjahsdkjah",
+            body: generateFakeProduct(),
           },
         },
       })
       .set("Authorization", `Bearer ${token}`);
-
-    expect(body.errors[0].message).to.equal("Product does not exist");
-
+      console.log(body)
+    // expect(body.errors[0].message).to.equal("Product does not exist");
   });
 });
