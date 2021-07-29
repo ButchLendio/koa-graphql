@@ -52,7 +52,7 @@ describe("Query.node", () => {
     expect(body.data.node.name).to.equal(product.name);
   });
 
-  it.only("should error if ID is invalid", async function () {
+  it("should error if ID is invalid", async function () {
     const mockId = Buffer.from("test");
 
     const { body } = await Request(startServer)
@@ -63,8 +63,6 @@ describe("Query.node", () => {
           id: mockId
         },
       })
-
-      console.log(body)
 
     expect(body.errors[0].message).to.equal("Invalid Id");
   });
