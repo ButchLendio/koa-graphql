@@ -1,4 +1,5 @@
-import Request from "supertest";0
+import Request from "supertest";
+0;
 import { expect } from "chai";
 import { startServer } from "../../src/index";
 import Products from "../../src/models/products";
@@ -26,12 +27,12 @@ describe("Mutation.updateProduct", () => {
   });
 
   it("should update product", async function () {
-    const updateProductBody  = generateFakeProduct();
+    const updateProductBody = generateFakeProduct();
     const ownerId = generateId(EntityType.Account);
 
-    await addFakeUserRegister({ownerId});
-    const product = await addFakeProduct({ownerId});
-    const token = await getToken({ownerId});
+    await addFakeUserRegister({ ownerId });
+    const product = await addFakeProduct({ ownerId });
+    const token = await getToken({ ownerId });
 
     const { body } = await Request(startServer)
       .post("/graphql")
@@ -40,7 +41,7 @@ describe("Mutation.updateProduct", () => {
         variables: {
           input: {
             id: product.id.toString("base64"),
-            body: updateProductBody ,
+            body: updateProductBody,
           },
         },
       })
@@ -51,9 +52,11 @@ describe("Mutation.updateProduct", () => {
 
   it("should error if not the owner", async function () {
     const ownerId = generateId(EntityType.Account);
-    await addFakeUserRegister({ownerId});
-    const token = await getToken({ownerId});
-    const product = await addFakeProduct({ownerId:generateId(EntityType.Account)});
+    await addFakeUserRegister({ ownerId });
+    const token = await getToken({ ownerId });
+    const product = await addFakeProduct({
+      ownerId: generateId(EntityType.Account),
+    });
 
     const { body } = await Request(startServer)
       .post("/graphql")
@@ -73,8 +76,10 @@ describe("Mutation.updateProduct", () => {
 
   it("should error if no token", async function () {
     const ownerId = generateId(EntityType.Account);
-    await addFakeUserRegister({ownerId});
-    const product = await addFakeProduct({ownerId:generateId(EntityType.Account)});
+    await addFakeUserRegister({ ownerId });
+    const product = await addFakeProduct({
+      ownerId: generateId(EntityType.Account),
+    });
 
     const { body } = await Request(startServer)
       .post("/graphql")
@@ -91,10 +96,13 @@ describe("Mutation.updateProduct", () => {
     expect(body.errors[0].message).to.equal("Invalid authentication header.");
   });
 
-  it.only("should Error if product does not exist", async function () {
+  it("should Error if product does not exist", async function () {
+    const updateProductBody = generateFakeProduct();
     const ownerId = generateId(EntityType.Account);
-    const token = await getToken({ownerId});
-    
+
+    await addFakeUserRegister({ ownerId });
+    const token = await getToken({ ownerId });
+
     const { body } = await Request(startServer)
       .post("/graphql")
       .send({
@@ -102,12 +110,12 @@ describe("Mutation.updateProduct", () => {
         variables: {
           input: {
             id: "akjshdkjahsdkjah",
-            body: generateFakeProduct(),
+            body: updateProductBody,
           },
         },
       })
       .set("Authorization", `Bearer ${token}`);
-      console.log(body)
-    // expect(body.errors[0].message).to.equal("Product does not exist");
+
+    expect(body.errors[0].message).to.equal("Product does not exist");
   });
 });

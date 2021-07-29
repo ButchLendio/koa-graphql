@@ -115,9 +115,6 @@ export const resolvers = {
     updateProduct: async (_: never, { input }, ctx) => {
       const { id: ownerId } = ctx.user;
       const { id, body } = input;
-
-      console.log(body)
-
       const product = await Products.findOne({ id });
 
       if (!product) {
