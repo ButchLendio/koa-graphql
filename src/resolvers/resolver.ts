@@ -15,7 +15,7 @@ export const resolvers = {
       return "WEW";
     },
 
-    node: async (parent: unknown, params: { id: Buffer }) => {
+    node: async (_parent: unknown, params: { id: Buffer }) => {
       const type = R.head(params.id as unknown as [number]);
 
       if (type === EntityType.Account) {
