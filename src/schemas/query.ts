@@ -1,55 +1,58 @@
 import { gql } from "apollo-server-koa";
 
-export const query= gql`
-type Query {
-  node(id: Binary!): Node!
+export const query = gql`
+  type Query {
+    node(id: Binary!): Node!
 
-  hello:String
+    hello: String
 
-  me: Account! @private
+    me: Account! @private
 
-  products(
-    first: Int = 10
-    after: Binary
-    filter: ProductsFilter
-  ): ProductConnection!
-}
+    products(
+      first: Int = 10
+      after: Binary
+      filter: ProductsFilter
+      sort: ProductSortInput
+    ): ProductConnection!
+  }
 
-input ProductsFilter {
-  id: BinaryQueryOperatorInput
-  name: StringQueryOperatorInput
-}
+  input ProductsFilter {
+    id: BinaryQueryOperatorInput
+    name: StringQueryOperatorInput
+  }
 
-input BinaryQueryOperatorInput {
-  eq: Binary
-  ne: Binary
-  in: [Binary!]
-  nin: [Binary!]
-}
+  input ProductSortInput {
+    name: Int
+  }
 
-input StringQueryOperatorInput {
-  eq: String
-  ne: String
-  in: [String!]
-  nin: [String!]
-  startsWith: String
-  contains: String
-}
+  input BinaryQueryOperatorInput {
+    eq: Binary
+    ne: Binary
+    in: [Binary!]
+    nin: [Binary!]
+  }
 
-type ProductConnection {
-  edges: [ProductEdge!]!
-  pageInfo: PageInfo!
-}
+  input StringQueryOperatorInput {
+    eq: String
+    ne: String
+    in: [String!]
+    nin: [String!]
+    startsWith: String
+    contains: String
+  }
 
-type PageInfo {
-  hasNextPage: Boolean!
-  endCursor: Binary
-}
+  type ProductConnection {
+    edges: [ProductEdge!]!
+    pageInfo: PageInfo!
+  }
 
-type ProductEdge {
-  cursor: Binary!
-  node: Product!
-}
+  type PageInfo {
+    hasNextPage: Boolean!
+    endCursor: Binary
+  }
 
-
-`
+  type ProductEdge {
+    cursor: Binary!
+    node: Product!
+  }
+`;
