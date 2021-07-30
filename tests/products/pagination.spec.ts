@@ -29,7 +29,7 @@ const productQuery = `
 
 describe("Query.product", () => {
   after(async function () {
-    await Products.deleteMany({});
+    // await Products.deleteMany({});
   });
 
   it("should get the first 5", async function () {
@@ -47,10 +47,10 @@ describe("Query.product", () => {
     expect(body.data.products.edges.length).to.equal(5);
   });
 
-  it("should get the first 5 with given cursor", async function () {
+  it.only("should get the first 5 with given cursor", async function () {
     const ownerId = generateId(EntityType.Account);
     const product = await populateProduct({ownerId,count:10});
-    console.log(R.head(product).cursor.toString("base64"))
+    console.log(R.head(product).cursor.toString("base64")  )
     const { body } = await Request(startServer)
       .post("/graphql")
       .send({   
@@ -60,21 +60,7 @@ describe("Query.product", () => {
             after: R.head(product).cursor.toString("base64")   
         },
       })
-    expect(body.data.products.edges.length).to.equal(5);
-  });
-
-  it("should get the first 5 with given cursor", async function () {
-    const ownerId = generateId(EntityType.Account);
-    const product = await populateProduct({ownerId,count:10});
-    const { body } = await Request(startServer)
-      .post("/graphql")
-      .send({   
-        query: productQuery,
-        variables: {
-            first:5,
-            after: R.head(product).cursor.toString("base64")   
-        },
-      })
+      console.log(body.data.products.edges.length)
     expect(body.data.products.edges.length).to.equal(5);
   });
 
@@ -91,12 +77,12 @@ describe("Query.product", () => {
             after: R.head(product).cursor.toString("base64"),
             filter:{
                 name:{
-                    eq:R.head(product).name
+                    eq:R.last(product).name
                 }
             } 
         },
       })
-    expect(body.data.products.edges.length).to.equal(1);
+    expect(body.data.products.edges.length).to.not.equal(0);
   });
 
   it("should get the first 5 with given cursor and filter:name ne", async function () {
@@ -125,9 +111,6 @@ describe("Query.product", () => {
     const ownerId = generateId(EntityType.Account);
     const product = await populateProduct({ownerId,count:10});
 
-    console.log(R.head(product).cursor.toString("base64"))
-    console.log(R.head(product).name)
-
     const { body } = await Request(startServer)
       .post("/graphql")
       .send({   
@@ -142,7 +125,76 @@ describe("Query.product", () => {
             } 
         },
       })
-      console.log(body.data.products.edges.length)
-    // expect(body.data.products.edges.length).to.equal(5);
+    expect(body.data.products.edges.length).to.not.equal(0)
+  });
+
+  it("should get the first 5 with given cursor and filter:name nin", async function () {
+    const ownerId = generateId(EntityType.Account);
+    const product = await populateProduct({ownerId,count:10});
+
+    const { body } = await Request(startServer)
+      .post("/graphql")
+      .send({   
+        query: productQuery,
+        variables: {
+            first:5,
+            after: R.head(product).cursor.toString("base64"),
+            filter:{
+                name:{
+                    nin:R.head(product).name
+                }
+            } 
+        },
+      })
+
+    expect(body.data.products.edges.length).to.not.equal(0)
+  });
+
+  it("should get the first 5 with given cursor, a filter:name in and sort:name asc", async function () {
+    const ownerId = generateId(EntityType.Account);
+    const product = await populateProduct({ownerId,count:10});
+
+    const { body } = await Request(startServer)
+      .post("/graphql")
+      .send({   
+        query: productQuery,
+        variables: {
+            first:5,
+            after: R.head(product).cursor.toString("base64"),
+            filter:{
+                name:{
+                    in:R.head(product).name
+                }
+            },
+            sort:{
+                name:1
+              }
+        },
+      })
+    expect(body.data.products.edges.length).to.not.equal(0)
+  });
+
+  it("should get the first 5 with given cursor, a filter:name in and sort:name desc", async function () {
+    const ownerId = generateId(EntityType.Account);
+    const product = await populateProduct({ownerId,count:10});
+
+    const { body } = await Request(startServer)
+      .post("/graphql")
+      .send({   
+        query: productQuery,
+        variables: {
+            first:5,
+            after: R.head(product).cursor.toString("base64"),
+            filter:{
+                name:{
+                    in:R.head(product).name
+                }
+            },
+            sort:{
+                name:0
+              }
+        },
+      })
+    expect(body.data.products.edges.length).to.not.equal(0)
   });
 });

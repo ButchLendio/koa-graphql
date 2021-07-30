@@ -19,7 +19,7 @@ describe("Mutation.me", () => {
             }
         `;
 
-  it.only("should display account", async function () {
+  it("should display account", async function () {
     const ownerId = generateId(EntityType.Account);
 
     const user = await addFakeUserRegister({ ownerId });
@@ -31,8 +31,7 @@ describe("Mutation.me", () => {
         query: meQuery,
       })
       .set("Authorization", `Bearer ${token}`);
-      console.log(body)
-    // expect(body.data.me.emailAddress).to.equal(user.emailAddress);
+    expect(body.data.me.emailAddress).to.equal(user.emailAddress);
   });
 
   it("should error if no token", async function () {
