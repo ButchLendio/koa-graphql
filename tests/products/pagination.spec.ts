@@ -29,7 +29,7 @@ const productQuery = `
 
 describe("Query.product", () => {
   after(async function () {
-    // await Products.deleteMany({});
+    await Products.deleteMany({});
   });
 
   it("should get the first 5", async function () {
@@ -47,10 +47,10 @@ describe("Query.product", () => {
     expect(body.data.products.edges.length).to.equal(5);
   });
 
-  it.only("should get the first 5 with given cursor", async function () {
+  it("should get the first 5 with given cursor", async function () {
     const ownerId = generateId(EntityType.Account);
     const product = await populateProduct({ownerId,count:10});
-    console.log(R.head(product).cursor.toString("base64")  )
+
     const { body } = await Request(startServer)
       .post("/graphql")
       .send({   
@@ -60,7 +60,7 @@ describe("Query.product", () => {
             after: R.head(product).cursor.toString("base64")   
         },
       })
-      console.log(body.data.products.edges.length)
+
     expect(body.data.products.edges.length).to.equal(5);
   });
 
@@ -104,7 +104,7 @@ describe("Query.product", () => {
         },
       })
 
-    expect(body.data.products.edges.length).to.equal(5);
+    expect(body.data.products.edges.length).to.not.equal(0);
   });
 
   it("should get the first 5 with given cursor and filter:name in", async function () {
