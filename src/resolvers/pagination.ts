@@ -13,6 +13,7 @@ export async function paginate<TDocument extends Document>(params: {
   const { first, after, last, before, sort, filter = {}, model } = params;
   const [cursorKey] = R.keys(sort);
   const order = sort[cursorKey];
+  console.log("LETS GO",filter)
 
   let items: TDocument[] = [];
   let hasNextPage = false;
