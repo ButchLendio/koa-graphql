@@ -13,6 +13,7 @@ export async function paginate<TDocument extends Document>(params: {
   const { first, after, last, before, sort, filter = {}, model } = params;
   const [cursorKey] = R.keys(sort);
   const order = sort[cursorKey];
+  console.log(filter)
 
   let items: TDocument[] = [];
   let hasNextPage = false;
@@ -26,7 +27,6 @@ export async function paginate<TDocument extends Document>(params: {
           [`${cursorKey}`]: order > 0 ? { $gt: after } : { $lt: after },
         }
       : {};
-
     const results = await model
       .find({
         ...filter,
@@ -34,6 +34,7 @@ export async function paginate<TDocument extends Document>(params: {
       })
       .sort(sort)
       .limit(first + 1);
+
 
     if (results.length > 0) {
 
