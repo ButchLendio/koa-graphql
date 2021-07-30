@@ -7,50 +7,36 @@ import {
 function escape(value: string) {
   return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 }
-function clean(obj) {
-    for (const propName in obj) {
-      if (obj[propName] === []) {
-        delete obj[propName];
-      }
-    }
-    return obj
-  }
+
 export function convertToMongooseQuery(queryOperator: {
   id: BinaryQueryOperatorInput;
   name: StringQueryOperatorInput;
 }) {
+  let filter: Record<string, object> = {};
+  for (let index = 0; index < Object.keys(queryOperator).length; index++) {
+    const elementKey = Object.keys(queryOperator)[index];
 
-  return R.compose<any, any, any, any, any>(
-    R.fromPairs,
-    R.filter<any>(R.identity),
-    R.map(([key,value]) => {
-        R.map((info)=>{
-            console.log("HAYY",info)
-        })(value)
+    if (!filter[elementKey]) {
+      filter[elementKey] = {};
+    }
+
+    for (let i = 0; i < Object.keys(queryOperator[elementKey]).length; i++) {
+      const key = Object.keys(queryOperator[elementKey])[i];
 
       if (key === "startsWith") {
-        console.log("1");
-        const regex = new RegExp(`^${escape(value)}.*$`, "i");
-        return ["$regex", regex];
+        const value = queryOperator[elementKey][key]
+        filter[elementKey]["$regex"] = new RegExp(`^${escape(value)}.*$`, 'i');
       }
-
-      if (key === "contains") {
-        console.log("2");
-        const regex = new RegExp(`^.*${escape(value)}.*$`, "i");
-        return ["$regex", regex];
+      else if (key === "contains") {
+        const value = queryOperator[elementKey][key]
+        filter[elementKey]["$regex"] = new RegExp(`^.*${escape(value)}.*$`, 'i');
       }
-      
-      console.log("3");
+      else{
+        filter[elementKey][`$${key}`] = queryOperator[elementKey][key]
 
-      //   return [`$${key}`, value];
-      //   else{
-      //     // const regex = new RegExp(`^.*${escape(value)}.*$`, "i");
+      }
+    }
+  }
 
-      //       console.log(value)
-      //       console.log("WTF",["$"+key])
-      //     return ["$"+value]
-      //   }
-    }),
-    R.toPairs
-  )(queryOperator);
+  return filter
 }

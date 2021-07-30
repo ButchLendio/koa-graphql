@@ -3,11 +3,11 @@ import { internet, name, commerce } from "faker";
 import Token from "../../src/config/jwt";
 import Users from "../../src/models/users";
 import Products from "../../src/models/products";
+import Product from "../../src/interfaces/products";
 import { generateId, EntityType } from "../../src/schemas/generate-ids";
 import R from "ramda";
 import Jwt from "jsonwebtoken";
 import Bcryptjs from "bcryptjs";
-
 
 export function generateFakeUser() {
   return {
@@ -27,7 +27,7 @@ export function generateFakeProduct() {
 
 export async function getToken(params: { ownerId: Buffer }) {
   const id = params.ownerId;
-  const foundUser = await Users.findOne({id});
+  const foundUser = await Users.findOne({ id });
   const timeInMilliseconds = new Date().getTime();
   const expirationTime = timeInMilliseconds + Number(Token.expireTime) * 10_000;
   const expireTimeInSeconds = Math.floor(expirationTime / 1_000);
@@ -44,13 +44,13 @@ export async function getToken(params: { ownerId: Buffer }) {
     }
   );
 
-  return token ;
+  return token;
 }
 
 export async function addFakeProduct(params: { ownerId: Buffer }) {
   const generateProduct = generateFakeProduct();
   const ownerId = params.ownerId;
-  const id = generateId(EntityType.Product)
+  const id = generateId(EntityType.Product);
   const cursor = Buffer.concat([
     Buffer.from(generateProduct.name),
     Buffer.from(id),
@@ -60,17 +60,32 @@ export async function addFakeProduct(params: { ownerId: Buffer }) {
 }
 
 export async function addFakeUserRegister(params: { ownerId: Buffer }) {
-  const id = params.ownerId
+  const id = params.ownerId;
   const generateUserInfo = generateFakeUser();
- 
+
   return Users.create({
-      ...generateUserInfo,
-      id,
-      password: await Bcryptjs.hash(generateUserInfo.password, 10),
-    });
+    ...generateUserInfo,
+    id,
+    password: await Bcryptjs.hash(generateUserInfo.password, 10),
+  });
 }
 
-export async function populateProduct(count: number = 5) {
-  Products.create(R.times(() => generateFakeProduct())(count))
+export async function populateProduct(params: {
+  ownerId: Buffer;
+  count: number;
+}) {
 
+  return await Products.create(
+    R.times(() => {
+      return {
+        ...generateFakeProduct(),
+        id: generateId(EntityType.Product),
+        cursor: Buffer.concat([
+          Buffer.from(generateFakeProduct().name),
+          Buffer.from(generateId(EntityType.Product)),
+        ]),
+        ownerId: params.ownerId,
+      };
+    })(params.count)
+  ) 
 }

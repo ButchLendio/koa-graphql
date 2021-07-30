@@ -31,7 +31,6 @@ describe("Mutation.me", () => {
         query: meQuery,
       })
       .set("Authorization", `Bearer ${token}`);
-
     expect(body.data.me.emailAddress).to.equal(user.emailAddress);
   });
 
