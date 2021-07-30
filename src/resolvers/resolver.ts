@@ -8,6 +8,9 @@ import { generateId, EntityType } from "../schemas/generate-ids";
 import { UserInputError } from "apollo-server-errors";
 import { EmailAddressResolver } from "graphql-scalars";
 import BinaryResolver from "../schemas/scalars/binary";
+import {BinaryQueryOperatorInput,StringQueryOperatorInput} from "./convert-mongoose"
+import {convertToMongooseQuery} from "./convert-filter"
+import { paginate } from "./pagination";
 
 export const resolvers = {
   Query: {
@@ -25,8 +28,34 @@ export const resolvers = {
       if (type === EntityType.Product) {
         return Products.findOne({ id: params.id });
       }
-      
-      throw new UserInputError("Invalid Id") 
+
+      throw new UserInputError("Invalid Id");
+    },
+
+    products: async (_parent: unknown,  params: {
+      first?: number,
+      after?: Buffer,
+      last?: number,
+      before?: Buffer,
+      sort?: {
+        name: number
+      }
+      filter?: {
+        id: BinaryQueryOperatorInput,
+        name: StringQueryOperatorInput
+      }
+    },) => {
+
+      return await paginate({
+        model: Products,
+        first: params.first?params.first:10,
+        after: params.after,
+        last: params.last,
+        before: params.before,
+        sort: params.sort ? { cursor: params.sort.name } : { cursor: 1 },
+        filter: params.filter ? convertToMongooseQuery(params.filter) : {},
+
+      })
     },
   },
   Node: {
@@ -155,7 +184,6 @@ export const resolvers = {
         product.description = body.description;
       }
 
-     
       await product.save();
       return product;
     },
@@ -170,13 +198,13 @@ export const resolvers = {
         throw new UserInputError("Product does not exist");
       }
 
-      if (!R.equals(foundProduct.ownerId, ownerId)){
+      if (!R.equals(foundProduct.ownerId, ownerId)) {
         throw new UserInputError("Not the owner of the product");
       }
 
       await foundProduct.deleteOne();
       return true;
-    }
+    },
   },
 
   EmailAddress: EmailAddressResolver,

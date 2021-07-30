@@ -6,7 +6,7 @@ export const query = gql`
 
     hello: String
 
-    # me: Account! @private
+    me: Account! @private
 
     products(
       first: Int = 10
